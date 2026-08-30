@@ -56,11 +56,17 @@ export default async function HomePage() {
         {/* Daftar Barber */}
         <div className="mt-10">
            <h2 className="text-lg font-bold text-gray-800">Barber Kami</h2>
-           <div className="mt-4 space-y-4">
-              {(barbers as Barber[]).map((barber) => (
-                 <BarberCard key={barber.id} barber={barber} />
-              ))}
-           </div>
+           {barbers.length === 0 ? (
+              <p className="mt-4 text-sm text-gray-500">
+               Barber belum tersedia. Silakan cek kembali nanti.
+             </p>
+           ) : (
+              <div className="mt-4 space-y-4">
+                 {(barbers as Barber[]).map((barber) => (
+                    <BarberCard key={barber.id} barber={barber} />
+                 ))}
+              </div>
+           )}
         </div>
      </section>
   );
