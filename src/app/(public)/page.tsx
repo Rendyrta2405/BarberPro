@@ -1,18 +1,29 @@
 import Link from "next/link";
 import ServiceCard from "@/components/ServiceCard";
+import BarberCard from "@/components/BarberCard";
 import { supabase } from "@/lib/supabase";
-import { Service } from "@/lib/types";
+import { Service, Barber } from "@/lib/types";
 
 export default async function HomePage() {
-   // 1. Ambil data dari Supabase
-  const { data: services, error } = await supabase
-     .from('services')
-     .select('*')
-     .eq('is_active', true)
-     .order('price', { ascending: true });
+   //  Fetch Dua Tabel dengan Promise.all
+  const [servicesResult, barbersResult] = await Promise.all([
+     supabase
+        .from('services')
+        .select('*')
+        .eq('is_active', true)
+        .order('price', { ascending: true }),
+     supabase
+        .from("barbers")
+        .select("*")
+        .eq("is_active", true)
+        .order("name"),
+  ]);
 
-  if (error || !services) {
-     return <p className="text-red-500">Gagal memuat layanan. Coba lagi nanti. </p>
+   const { data: services, error: servicesError } = servicesResult;
+   const { data: barbers, error: barbersError } = barbersResult;
+
+  if (servicesError || barbersError || !services || !barbers) {   
+     return <p className="text-red-500">Gagal memuat data. Coba lagi nanti. </p>
   }
    
   return (
@@ -38,6 +49,16 @@ export default async function HomePage() {
            <div className="mt-4 space-y-4">
               {(services as Service[]).map((service) => (
                  <ServiceCard key={service.id} service={service} />
+              ))}
+           </div>
+        </div>
+
+        {/* Daftar Barber */}
+        <div className="mt-10">
+           <h2 className="text-lg font-bold text-gray-800">Barber Kami</h2>
+           <div className="mt-4 space-y-4">
+              {(barbers as Barber[]).map((barber) => (
+                 <BarberCard key={barber.id} barber={barber} />
               ))}
            </div>
         </div>
