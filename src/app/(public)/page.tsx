@@ -1,8 +1,20 @@
 import Link from "next/link";
 import ServiceCard from "@/components/ServiceCard";
-import { dummyServices } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
+import { Service } from "@/lib/types";
 
-export default function HomePage() {
+export default async function HomePage() {
+   // 1. Ambil data dari Supabase
+  const { data: services, error } = await supabase
+     .from('services')
+     .select('*')
+     .eq('is_active', true)
+     .order('price', { ascending: true });
+
+  if (error || !services) {
+     return <p className="text-red-500">Gagal memuat layanan. Coba lagi nanti. </p>
+  }
+   
   return (
      <section>
         <h1 className="text-3xl font-extrabold leading-tight">
@@ -24,7 +36,7 @@ export default function HomePage() {
            <h2 className="text-lg font-bold text-gray-800">Layanan Kami</h2>
 
            <div className="mt-4 space-y-4">
-              {dummyServices.map((service) => (
+              {(services as Service[]).map((service) => (
                  <ServiceCard key={service.id} service={service} />
               ))}
            </div>
