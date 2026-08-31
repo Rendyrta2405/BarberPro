@@ -1,36 +1,34 @@
-import { supabase } from "@/lib/supabase";
-import { Barber, Service } from "@/lib/types";
+import {
+   getActiveServices,
+   getActiveBarbers,
+   getAllWorkingHours,
+} from "@/lib/queries";
 import BookingClient from "@/components/BookingClient";
 
 export default async function BookingPage() {
    //  Fetch Dua Tabel dengan Promise.all
-  const [servicesResult, barbersResult] = await Promise.all([
-     supabase
-        .from('services')
-        .select('*')
-        .eq('is_active', true)
-        .order('price', { ascending: true }),
-     supabase
-        .from("barbers")
-        .select("*")
-        .eq("is_active", true)
-        .order("name"),
+  const [servicesResult, barbersResult, workingHoursResult ] = 
+   await Promise.all([
+     getActiveServices(),
+     getActiveBarbers(),
+     getAllWorkingHours(),
    ]);
 
    const { data: services, error: servicesError } = servicesResult;
    const { data: barbers, error: barbersError } = barbersResult;
+   const { data: workingHours, error: workingHoursError } = workingHoursResult;
 
-   if (servicesError || barbersError || !services || !barbers) {   
-     return 
-        <p className="text-red-500">
-           Gagal memuat data. Coba lagi nanti. 
-        </p>
-   }
+   
+  if (servicesError || barbersError || workingHoursError) {
+    return 
+       <p className="text-red-500">Gagal memuat data booking.</p>;
+  }
    
    return (
       <BookingClient
-         services={services as Service[]}
-         barbers={barbers as Barber[]}
+         services={services}
+         barbers={barbers}
+         workingHours={workingHours}
       />
    );
 }
