@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Barber, Service, WorkingHour } from "@/lib/types";
 import { formatRupiah } from "@/lib/format";
+import BookingForm from "@/components/BookingForm";
 import {
   generateSlots,
   filterPastSlots,
@@ -184,18 +185,14 @@ export default function BookingClient({
          )}
 
          {selectedService && selectedBarber && selectedDate && selectedSlot !== null && (
-            <section className="rounded-xl border border-gray-200 bg-white p-4">
-               <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">
-                  Ringkasan
-               </h2>
-               <p className="mt-2 text-sm">
-                  {selectedService.name} dengan {selectedBarber.name} pada {selectedDate}{" "}
-                  jam {minutesToTime(selectedSlot)}.
-               </p>
-               <p className="mt-1 text-xs text-gray-500">
-                  Form data diri akan kita bangun di Part 8.
-               </p>
-            </section>
+            <BookingForm
+               serviceId={selectedService.id}
+               barberId={selectedBarber.id}
+               serviceName={selectedService.name}
+               barberName={selectedBarber.name}
+               date={selectedDate}
+               slotMinutes={selectedSlot}
+            />
          )}
       </div>
    );
