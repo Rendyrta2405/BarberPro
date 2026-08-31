@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Service, Barber } from "@/lib/types";
 
 export default async function HomePage() {
-   //  Fetch Dua Tabel dengan Promise.all
+  //  Fetch Dua Tabel dengan Promise.all
   const [servicesResult, barbersResult] = await Promise.all([
      supabase
         .from('services')
@@ -17,14 +17,17 @@ export default async function HomePage() {
         .select("*")
         .eq("is_active", true)
         .order("name"),
-  ]);
+   ]);
 
    const { data: services, error: servicesError } = servicesResult;
    const { data: barbers, error: barbersError } = barbersResult;
 
-  if (servicesError || barbersError || !services || !barbers) {   
-     return <p className="text-red-500">Gagal memuat data. Coba lagi nanti. </p>
-  }
+   if (servicesError || barbersError || !services || !barbers) {   
+     return 
+        <p className="text-red-500">
+           Gagal memuat data. Coba lagi nanti. 
+        </p>
+   }
    
   return (
      <section>
