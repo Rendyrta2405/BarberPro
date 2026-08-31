@@ -1,23 +1,68 @@
 "use client";
 
 import { useState } from "react";
-import { Barber, Service } from "@/lib/types";
+import { Barber, Service, WorkingHour } from "@/lib/types";
 import { formatRupiah } from "@/lib/format";
+import {
+  generateSlots,
+  filterPastSlots,
+  timeToMinutes,
+  minutesToTime,
+} from "@/lib/slots";
 
 interface BookingClientProps {
    services: Service[];
    barbers: Barber[];
+   workingHours: WorkingHour[];
 }
 
-export default function BookingClient({ services, barbers }: BookingClientProps) {
-   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
-   const [selectedBarberId, setSelectedBarberId] = useState<string | null>(null);
+export default function BookingClient({ 
+   services, 
+   barbers,
+   workingHours,
+}: BookingClientProps) {
+   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
+   const [selectedBarberId, setSelectedBarberId] = useState<number | null>(null);
    const [selectedDate, setSelectedDate] = useState("");
-
+   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+   
    const today = new Date().toLocaleDateString("en-CA");
 
    const selectedService = services.find((s) => s.id === selectedServiceId);
    const selectedBarber = barbers.find((b) => b.id === selectedBarberId);
+
+   const weekday = selectedDate
+      ? new Date(`${selectedDate}T00:00:00`).getDay()
+      : null;
+
+   const workingHour = workingHours.find(
+      (wh) => wh.barber_id === selectedBarberId && wh.weekday === weekday
+   );
+
+   let slots: number[] = [];
+   if (workingHour && selectedService) {
+      slots = generateSlots(
+         timeToMinutes(workingHour.start_time),
+         timeToMinutes(workingHour.end_time),
+         selectedService.duration
+      );
+      slots = filterPastSlots(slots, selectedDate);
+   }
+   
+   function chooseService(id: number) {
+      setSelectedServiceId(id);
+      setSelectedSlot(null);
+   }
+
+   function chooseBarber(id: number) {
+      setSelectedBarberId(id);
+      setSelectedSlot(null);
+   }
+
+   function chooseDate(value: string) {
+      setSelectedDate(value);
+      setSelectedSlot(null);
+   }
 
    return (
       <div className="space-y-8">
@@ -39,7 +84,7 @@ export default function BookingClient({ services, barbers }: BookingClientProps)
                   <button
                      key={service.id}
                      type="button"
-                     onClick={() => setSelectedServiceId(service.id)}
+                     onClick={() => chooseService(service.id)}
                      className={`w-full rounded-xl border-2 p-4 text-left transition ${
                         isSelected 
                         ? "border-gray-900 bg-gray-900 text-white"
@@ -70,7 +115,7 @@ export default function BookingClient({ services, barbers }: BookingClientProps)
                      <button
                         key={barber.id}
                         type="button"
-                        onClick={() => setSelectedBarberId(barber.id)}
+                        onClick={() => chooseBarber(barber.id)}
                         className={`rounded-xl border-2 p-3 text-center transition ${
                            isSelected
                            ? "border-gray-900 bg-gray-900 text-white"
@@ -93,22 +138,63 @@ export default function BookingClient({ services, barbers }: BookingClientProps)
                type="date"
                value={selectedDate}
                min={today}
-               onChange={(event) => setSelectedDate(event.target.value)}
+               onChange={(event) => chooseDate(event.target.value)}
                className="mt-3 w-full rounded-xl border-2 border-gray-200 bg-white p-3"
             />
          </section>
 
          {selectedService && selectedBarber && selectedDate && (
+            <section>
+               <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">
+                  4. Pilih Jam
+               </h2>
+
+               {workingHour ? (
+                  slots.length > 0 ? (
+                     <div className="mt-3 grid grid-cols-4 gap-2">
+                        {slots.map((slot) => {
+                           const isSelected = slot === selectedSlot;
+                           return (
+                              <button
+                                 key={slot}
+                                 type="button"
+                                 onClick={() => setSelectedSlot(slot)}
+                                 className={`rounded-lg border-2 py-2 text-sm font-semibold transition ${
+                                 isSelected
+                                   ? "border-gray-900 bg-gray-900 text-white"
+                                   : "border-gray-200 bg-white"
+                               }`}
+                              >
+                                 {minutesToTime(slot)}
+                              </button>
+                           );
+                        })}
+                     </div>
+                  ) : (
+                     <p className="mt-3 text-sm text-gray-500">
+                      Tidak ada jam tersedia di tanggal ini.
+                    </p>
+                  )
+               ) : (
+                  <p className="mt-3 text-sm text-gray-500">
+                    {selectedBarber.name} libur di hari ini.
+                  </p>
+               )}
+            </section>
+         )}
+
+         {selectedService && selectedBarber && selectedDate && selectedSlot !== null && (
             <section className="rounded-xl border border-gray-200 bg-white p-4">
                <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">
                   Ringkasan
                </h2>
                <p className="mt-2 text-sm">
-                  {selectedService.name} dengan {selectedBarber.name} pada {selectedDate}
+                  {selectedService.name} dengan {selectedBarber.name} pada {selectedDate}{" "}
+                  jam {minutesToTime(selectedSlot)}.
                </p>
-               <p className="mt-1 text-xs text-gray-500"> 
-                  Pemilihan jam akan kita bangun di Part 7. 
-               </p> 
+               <p className="mt-1 text-xs text-gray-500">
+                  Form data diri akan kita bangun di Part 8.
+               </p>
             </section>
          )}
       </div>
