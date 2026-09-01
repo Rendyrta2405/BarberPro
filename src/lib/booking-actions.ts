@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
+import { minutesToTime } from "@/lib/slots";
+import { sendBookingConfirmation } from "@/lib/email";
 
 const bookingSchema = z.object({
    serviceId: z.number(),
@@ -10,6 +12,7 @@ const bookingSchema = z.object({
    slotMinutes: z.number().int().min(0).max(23 * 60 + 59),
    customerName: z.string().trim().min(3),
    customerPhone: z.string().regex(/^\+628\d{8,11}$/),
+   customerEmail: z.string().trim().regex(/^\S+@\S+\.\S+$/),
    customerNotes: z.string().trim().max(300),
 });
 
@@ -33,14 +36,16 @@ export async function createBooking(input: BookingInput) {
 
    const data = parsed.data;
 
-   const { data: service, error: serviceError } = await supabase
-      .from("services")
-      .select("duration")
-      .eq("id", data.serviceId)
-      .single();
+   const [serviceResult, barberResult] = await Promise.all([
+      supabase.from("services").select("name, duration").eq("id", data.serviceId).single(),
+      supabase.from("barbers").select("name").eq("id", data.barberId).single(),
+   ]);
 
-   if (serviceError || !service) {
-      return { ok: false as const, message: "Layanan tidak ditemukan"};
+   const service = serviceResult.data;
+   const barber = barberResult.data;
+
+   if (!service || !barber) {
+      return { ok: false as  const, message: "Layanan atau barber tidak ditemukan." };
    }
 
    const { error } = await supabase.from("bookings").insert({
@@ -48,6 +53,7 @@ export async function createBooking(input: BookingInput) {
       barber_id: data.barberId,
       customer_name: data.customerName,
       customer_phone: data.customerPhone,
+      customer_email: data.customerEmail,
       customer_notes: data.customerNotes === "" ? null : data.customerNotes,
       starts_at: minutesToIso(data.date, data.slotMinutes),
       ends_at: minutesToIso(data.date, data.slotMinutes + service.duration),
@@ -74,9 +80,25 @@ export async function createBooking(input: BookingInput) {
       return { ok: false as const, message: "Gagal menyimpan booking. Coba lagi" };
    }
 
-   return { 
+   let emailOk = true;
+   try {
+      await sendBookingConfirmation({
+         toEmail: data.customerEmail,
+         customerName: data.customerName,
+         serviceName: service.name,
+         barberName: barber.name,
+         date: data.date,
+         timeLabel: minutesToTime(data.slotMinutes),
+      })
+   } catch (error) {
+      emailOk = false;
+   }
+   
+   return {
       ok: true as const, 
-      message: "Booking berhasil disimpan" 
+      message: emailOk
+         ? "Booking berhasil! Email konfirmasi sudah dikirim."
+         : "Booking berhasil! (Email konfirmasi gagal dikirim — hubungi kami bila perlu.)"
    };
 }
 

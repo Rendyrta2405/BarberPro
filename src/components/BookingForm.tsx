@@ -18,6 +18,7 @@ interface BookingFormProps {
 interface FormErrors {
    name?: string;
    phone?: string;
+   email?: string;
 }
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
@@ -33,6 +34,7 @@ export default function BookingForm({
 }: BookingFormProps) {
    const [customerName, setCustomerName] = useState("");
    const [customerPhone, setCustomerPhone] = useState("");
+   const [customerEmail, setCustomerEmail] = useState("");
    const [customerNotes, setCustomerNotes] = useState("");
    const [errors, setErrors] = useState<FormErrors>({});
    const [status, setStatus] = useState<SubmitStatus>("idle");
@@ -53,6 +55,10 @@ export default function BookingForm({
          newErrors.phone = "Nomor tidak valid. Contoh: 081234567890";
       }
 
+      if (!/^\S+@\S+\.\S+$/.test(customerEmail.trim())) {
+         newErrors.email = "Email tidak valid. Contoh: nama@gmail.com";
+      }
+
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
    }
@@ -69,6 +75,7 @@ export default function BookingForm({
          slotMinutes,
          customerName: customerName.trim(),
          customerPhone: normalizePhone(customerPhone),
+         customerEmail: customerEmail.trim(),
          customerNotes: customerNotes.trim(),
       });
 
@@ -138,6 +145,30 @@ export default function BookingForm({
                    <p className="mt-1 text-xs text-red-500">
                       {errors.phone}
                    </p>
+               )}
+            </div>
+
+            <div>
+               <label htmlFor="email" className="text-sm font-medium">Email</label>
+               <input
+                  id="email"
+                  type="email"
+                  value={customerEmail}
+                  onChange={(e) => {
+                     setCustomerEmail(e.target.value);
+                     clearError("email");
+                  }}
+                  placeholder="nama@gmail.com"
+                  className={`mt-1 w-full rounded-xl border-2 bg-white p-3 text-sm ${
+                  errors.email 
+                     ? "border-red-500" 
+                     : "border-gray-200"
+                }`}
+               />
+               {errors.email && (
+                  <p className="mt-1 text-xs text-red-500">
+                      {errors.email}
+                  </p>
                )}
             </div>
 
