@@ -4,6 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { minutesToTime } from "@/lib/slots";
 import { sendBookingConfirmation } from "@/lib/email";
+import { sendWhatsAppToAdmin, buildBookingMessage } from "@/lib/whatsapp";
 
 const bookingSchema = z.object({
    serviceId: z.number(),
@@ -80,26 +81,39 @@ export async function createBooking(input: BookingInput) {
       return { ok: false as const, message: "Gagal menyimpan booking. Coba lagi" };
    }
 
-   let emailOk = true;
-   try {
-      await sendBookingConfirmation({
+   const [emailResult, waResult] = await Promise.allSettled([
+      sendBookingConfirmation({
          toEmail: data.customerEmail,
          customerName: data.customerName,
          serviceName: service.name,
          barberName: barber.name,
          date: data.date,
          timeLabel: minutesToTime(data.slotMinutes),
-      })
-   } catch (error) {
-      emailOk = false;
+      }),
+      sendWhatsAppToAdmin(
+         buildBookingMessage({
+            customerName: data.customerName,
+            customerPhone: data.customerPhone,
+            customerNotes: data.customerNotes,
+            serviceName: service.name,
+            barberName: barber.name,
+            date: data.date,
+            timeLabel: minutesToTime(data.slotMinutes),
+         })
+      ),
+   ]);
+
+   const emailOk = emailResult.status === "fulfilled";
+   const waOk = waResult.status === "fulfilled";
+
+   let message = "Booking berhasil!";
+   if (emailOk) message += " Email konfirmasi terkirim.";
+   if (waOk) message += " Admin sudah diberitahu via whatsapp.";
+   if (!emailOk || !waOk) {
+      message += " (Sebagian notifikasi gagal — booking tetap aman.)"
    }
    
-   return {
-      ok: true as const, 
-      message: emailOk
-         ? "Booking berhasil! Email konfirmasi sudah dikirim."
-         : "Booking berhasil! (Email konfirmasi gagal dikirim — hubungi kami bila perlu.)"
-   };
+   return { ok: true as const, message };
 }
 
 export async function getBookedSlots(barberId: number, date: string) {
