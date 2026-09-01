@@ -1,15 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Barber, Service, WorkingHour } from "@/lib/types";
 import { formatRupiah } from "@/lib/format";
 import BookingForm from "@/components/BookingForm";
+import { getBookedSlots } from "@/lib/booking-actions";
 import {
   generateSlots,
   filterPastSlots,
   timeToMinutes,
   minutesToTime,
 } from "@/lib/slots";
+
+interface BookedRange {
+   startMinutes: number;
+   endMinutes: number;
+}
 
 interface BookingClientProps {
    services: Service[];
@@ -26,6 +32,8 @@ export default function BookingClient({
    const [selectedBarberId, setSelectedBarberId] = useState<number | null>(null);
    const [selectedDate, setSelectedDate] = useState("");
    const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+   const [bookedRanges, setBookedRanges] = useState<BookedRange[]>([]);
+   const [refreshKey, setRefreshKey] = useState(0);
    
    const today = new Date().toLocaleDateString("en-CA");
 
@@ -48,6 +56,42 @@ export default function BookingClient({
          selectedService.duration
       );
       slots = filterPastSlots(slots, selectedDate);
+   }
+
+   useEffect(() => {
+      if (!selectedBarberId || !selectedDate) {
+         setBookedRanges([]);
+         return;
+      }
+
+      let canceled = false;
+
+      getBookedSlots(selectedBarberId, selectedDate).then((ranges) => {
+         if (!canceled) setBookedRanges(ranges);
+      });
+
+      return () => {
+         canceled = true;
+      };
+   }, [selectedBarberId, selectedDate, refreshKey]);
+
+   useEffect(() => {
+      if (
+         selectedSlot !== null &&
+         selectedService &&
+         isSlotTaken(selectedSlot, selectedService.duration, bookedRanges)
+      ) {
+         setSelectedSlot(null);
+      }
+   }, [bookedRanges, selectedSlot, selectedService]);
+
+   function isSlotTaken(
+      slot: number,
+      duration: number,
+      ranges: BookedRange[]
+   ): boolean {
+      const slotEnd = slot + duration;
+      return ranges.some((r) => slot < r.endMinutes && slotEnd > r.startMinutes);
    }
    
    function chooseService(id: number) {
@@ -80,7 +124,6 @@ export default function BookingClient({
             </h2>
             {services.map((service) => {
                const isSelected = service.id === selectedServiceId;
-
                return (
                   <button
                      key={service.id}
@@ -111,7 +154,6 @@ export default function BookingClient({
             <div className="mt-3 grid grid-cols-2 gap-3">
                {barbers.map((barber) => {
                   const isSelected = barber.id === selectedBarberId;
-
                   return (
                      <button
                         key={barber.id}
@@ -154,14 +196,22 @@ export default function BookingClient({
                   slots.length > 0 ? (
                      <div className="mt-3 grid grid-cols-4 gap-2">
                         {slots.map((slot) => {
+                           const taken = isSlotTaken(
+                              slot,
+                              selectedService.duration,
+                              bookedRanges
+                           );
                            const isSelected = slot === selectedSlot;
                            return (
                               <button
                                  key={slot}
                                  type="button"
+                                 disabled={taken}
                                  onClick={() => setSelectedSlot(slot)}
                                  className={`rounded-lg border-2 py-2 text-sm font-semibold transition ${
-                                 isSelected
+                                 taken
+                                 ? "cursor-not-allowed border-gray-100 bg-gray-100 text-gray-300 line-through"
+                                 : isSelected
                                    ? "border-gray-900 bg-gray-900 text-white"
                                    : "border-gray-200 bg-white"
                                }`}
@@ -192,6 +242,7 @@ export default function BookingClient({
                barberName={selectedBarber.name}
                date={selectedDate}
                slotMinutes={selectedSlot}
+               onBooked={() => setRefreshKey((k) => k + 1)}
             />
          )}
       </div>

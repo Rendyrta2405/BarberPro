@@ -12,6 +12,7 @@ interface BookingFormProps {
    barberName: string;
    date: string;
    slotMinutes: number;
+   onBooked: () => void;
 }
 
 interface FormErrors {
@@ -28,6 +29,7 @@ export default function BookingForm({
    barberName,
    date,
    slotMinutes,
+   onBooked,
 }: BookingFormProps) {
    const [customerName, setCustomerName] = useState("");
    const [customerPhone, setCustomerPhone] = useState("");
@@ -72,6 +74,10 @@ export default function BookingForm({
 
       setStatus(result.ok ? "success" : "error");
       setServerMessage(result.message);
+
+      if (result.ok) {
+         onBooked();
+      }
    }
 
    return (

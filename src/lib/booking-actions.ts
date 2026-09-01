@@ -89,11 +89,22 @@ export async function getBookedSlots(barberId: number, date: string) {
    const startIso = `${date}T00:00:00+07:00`;
    const endIso = `${date}T23:59:59+07:00`;
 
-   const { data, error } = await supabase
-      .from("bookings")
-      .select("starts_at, ends_at")
-      .eq("barber_id", barberId)
-      .in("status", ["pending", "connfirmed"])
-      .gte("starts_at", startIso)
-      .lte("starts_at", endIso);
+   const { data, error } = await supabase.rpc("get_booked_slots", {
+      p_barber_id: barberId,
+      p_from: startIso,
+      p_to: endIso,
+   });
+
+   if (error || !data) return [];
+
+   return data.map((b) => ({
+      startMinutes: isoToMinutes(b.starts_at),
+      endMinutes: isoToMinutes(b.ends_at),
+   }));
+}
+
+function isoToMinutes(iso: string): number {
+   const d = new Date(iso);
+   const hours = (d.getUTCHours() + 7) % 24;
+   return hours * 60 + d.getUTCMinutes();
 }
