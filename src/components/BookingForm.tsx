@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { isValidIndonesianPhone, normalizePhone } from "@/lib/phone";
 import { minutesToTime } from "@/lib/slots";
+import { createBooking } from "@/lib/booking-actions";
 
 interface BookingFormProps {
    serviceId: number;
@@ -18,15 +19,7 @@ interface FormErrors {
    phone?: string;
 }
 
-interface BookingPayload {
-   serviceId: number;
-   barberId: number;
-   date: string;
-   slotMinutes: number;
-   customerName: string;
-   customerPhone: string;
-   customerNotes: string;
-}
+type SubmitStatus = "idle" | "loading" | "success" | "error";
 
 export default function BookingForm({
    serviceId,
@@ -40,10 +33,11 @@ export default function BookingForm({
    const [customerPhone, setCustomerPhone] = useState("");
    const [customerNotes, setCustomerNotes] = useState("");
    const [errors, setErrors] = useState<FormErrors>({});
-   const [sentPayload, setSentPayload] = useState<BookingPayload | null>(null);
+   const [status, setStatus] = useState<SubmitStatus>("idle");
+   const [serverMessage, setServerMessage] = useState("");
 
    function clearError(field: keyof FormErrors) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+      setErrors((prev: FormErrors) => ({ ...prev, [field]: undefined }));
    }
 
    function validate(): boolean {
@@ -61,10 +55,12 @@ export default function BookingForm({
       return Object.keys(newErrors).length === 0;
    }
 
-   function handleSubmit() {
+   async function handleSubmit() {
       if (!validate()) return;
 
-      const payload: BookingPayload = {
+      setStatus("loading");
+
+      const result = await createBooking({
          serviceId,
          barberId,
          date,
@@ -72,9 +68,10 @@ export default function BookingForm({
          customerName: customerName.trim(),
          customerPhone: normalizePhone(customerPhone),
          customerNotes: customerNotes.trim(),
-      };
+      });
 
-      setSentPayload(payload);
+      setStatus(result.ok ? "success" : "error");
+      setServerMessage(result.message);
    }
 
    return (
@@ -124,7 +121,7 @@ export default function BookingForm({
                      setCustomerPhone(e.target.value);
                      clearError("phone");
                   }}
-                  placeholder="08xxxxxxxxx"
+                  placeholder="08xxxxxxxxxx"
                   className={`mt-1 w-full rounded-xl border-2 bg-white p-3 text-sm ${
                     errors.phone 
                      ? "border-red-500" 
@@ -155,17 +152,26 @@ export default function BookingForm({
             <button
                type="button"
                onClick={handleSubmit}
-               className="w-full rounded-xl bg-gray-900 px-5 py-3 font-semibold text-white"
+               disabled={status === "loading"}
+               className="w-full rounded-xl bg-gray-900 px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-                Konfirmasi Booking
+               {status === "loading" ? "Menyimpan..." : "Konfirmasi Booking"}
             </button>
 
-            {sentPayload && (
-               <pre className="overflow-x-auto rounded-xl bg-green-50 p-3 text-xs text-green-700">
-                  {JSON.stringify(sentPayload, null, 2)}
-               </pre>
+            {status === "success" && (
+               <p className="rounded-xl bg-green-50 p-3 text-sm text-green-700">
+                  {serverMessage}
+               </p>
+            )}
+
+            {status === "error" && (
+               <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                  {serverMessage}
+               </p>
             )}
          </div>
       </section>
    );
 }
+
+// User sudah capek isi form -> lalu user ganti pilihan layanan / barber -> harus isi form ulang -> user capek
