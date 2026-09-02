@@ -8,7 +8,7 @@ export function minutesToTime(minutes: number): string {
    const m = minutes % 60;
    const hh = String(h).padStart(2, "0");
    const mm = String(m).padStart(2, "0");
-   return `${hh} : ${mm}`;
+   return `${hh}:${mm}`;
 }
 
 export function generateSlots(
