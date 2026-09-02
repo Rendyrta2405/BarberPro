@@ -114,7 +114,7 @@ export async function createBooking(input: BookingInput) {
    ];
    
    // Membuang nilai null/kosong dan menggabungkannya dengan enter
-   let message = lines.filter(Boolean).join("\n");
+   const message = lines.filter(Boolean).join("\n");
    
    return { ok: true as const, message };
 }
@@ -136,7 +136,7 @@ export async function getBookedSlots(barberId: number, date: string) {
 
    if (error || !data) return [];
 
-   return data.map((b) => ({
+   return data.map((b: { starts_at: string; ends_at: string }) => ({
       startMinutes: isoToMinutes(b.starts_at),
       endMinutes: isoToMinutes(b.ends_at),
    }));

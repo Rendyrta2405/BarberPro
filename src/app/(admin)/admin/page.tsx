@@ -20,8 +20,7 @@ export default async function AdminPage() {
       .order("starts_at", { ascending: false });
 
    if (error) {
-      return 
-         <p className="text-red-500">
+      return <p className="text-red-500">
             Gagal memuat booking: {error.message}
          </p>;
    }

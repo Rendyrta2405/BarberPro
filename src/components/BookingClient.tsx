@@ -23,6 +23,11 @@ interface BookingClientProps {
   workingHours: WorkingHour[];
 }
 
+function isSlotTaken(slot: number, duration: number, ranges: BookedRange[]) {
+  const slotEnd = slot + duration;
+  return ranges.some((r) => slot < r.endMinutes && slotEnd > r.startMinutes);
+}
+
 export default function BookingClient({
   services,
   barbers,
@@ -60,7 +65,6 @@ export default function BookingClient({
 
   useEffect(() => {
     if (!selectedBarberId || !selectedDate) {
-      setBookedRanges([]);
       return;
     }
 
@@ -75,20 +79,12 @@ export default function BookingClient({
     };
   }, [selectedBarberId, selectedDate, refreshKey]);
 
-  useEffect(() => {
-    if (
-      selectedSlot !== null &&
-      selectedService &&
-      isSlotTaken(selectedSlot, selectedService.duration, bookedRanges)
-    ) {
-      setSelectedSlot(null);
-    }
-  }, [bookedRanges, selectedSlot, selectedService]);
-
-  function isSlotTaken(slot: number, duration: number, ranges: BookedRange[]) {
-    const slotEnd = slot + duration;
-    return ranges.some((r) => slot < r.endMinutes && slotEnd > r.startMinutes);
-  }
+  const validSelectedSlot =
+    selectedSlot !== null &&
+    selectedService !== undefined &&
+    !isSlotTaken(selectedSlot, selectedService.duration, bookedRanges)
+      ? selectedSlot
+      : null;
 
   function chooseService(id: number) {
     setSelectedServiceId(id);
@@ -239,14 +235,14 @@ export default function BookingClient({
         <div className="lg:sticky lg:top-24">
           <BookingForm
             complete={Boolean(
-              selectedService && selectedBarber && selectedDate && selectedSlot !== null
+              selectedService && selectedBarber && selectedDate && validSelectedSlot !== null
             )}
             serviceId={selectedService?.id ?? 0}
             barberId={selectedBarber?.id ?? 0}
             serviceName={selectedService?.name ?? ""}
             barberName={selectedBarber?.name ?? ""}
             date={selectedDate}
-            slotMinutes={selectedSlot ?? 0}
+            slotMinutes={validSelectedSlot ?? 0}
             onBooked={() => setRefreshKey((k) => k + 1)}
           />
         </div>
