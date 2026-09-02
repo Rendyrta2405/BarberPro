@@ -13,7 +13,7 @@ export default function BarberCard({ barber }: { barber: Barber }) {
    return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
          <div className="h-56 bg-gray-200">
-            {barber.photo_utl ? (
+            {barber.photo_url ? (
                <img
                   src={barber.photo_url}
                   alt={barber.name}

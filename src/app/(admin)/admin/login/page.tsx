@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
   }
    
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-4">
+    <section className="mx-auto max-w-md rounded-xl border border-gray-200 bg-white p-4">
        <h1 className="text-2xl font-bold">Login Admin</h1>
        <p className="mt-1 text-sm text-gray-600"> 
          Khusus staf BarberPro. 
