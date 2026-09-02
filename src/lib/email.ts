@@ -27,7 +27,7 @@ export async function sendBookingConfirmation(p: ConfirmationParams) {
    };
 
    await resend.emails.send({
-      from: "BarberPro <onboarding@resend.dev>", 
+      from: "BarberPro <barberpro@rrdevs.my.id>", 
       to: p.toEmail,
       subject: `Konfirmasi Booking BarberPro — ${p.date} (${p.timeLabel})`,
       html: `
