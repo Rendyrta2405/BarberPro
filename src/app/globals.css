@@ -1,5 +1,80 @@
 @import "tailwindcss";
 
-* {
-   scroll-behavior: smooth;
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+
+  --color-ink: #0c0f13;
+  --color-ink-soft: #1a2029;
+  --color-gold: #c9a24b;
+  --color-gold-soft: #e0be6e;
+  --color-cream: #faf8f3;
+  --color-line: #e8e2d6;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream font-sans text-ink antialiased;
+}
+
+/* ---------- komponen reusable ---------- */
+
+.eyebrow {
+  @apply text-xs font-bold uppercase tracking-[0.25em] text-gold;
+}
+
+.title-display {
+  @apply font-display text-3xl font-semibold sm:text-4xl;
+}
+
+.section {
+  @apply mx-auto w-full max-w-6xl px-4 py-20 sm:py-24;
+}
+
+.btn-gold {
+  @apply inline-block rounded-full bg-gold px-7 py-3 text-sm font-bold text-ink transition hover:bg-gold-soft;
+}
+
+.btn-dark {
+  @apply inline-block rounded-full bg-ink px-7 py-3 text-sm font-bold text-cream transition hover:bg-ink-soft;
+}
+
+.btn-outline-light {
+  @apply inline-block rounded-full border border-cream/30 px-7 py-3 text-sm font-bold text-cream transition hover:border-cream;
+}
+
+.card {
+  @apply rounded-2xl border border-line bg-white shadow-[0_10px_40px_-15px_rgb(0_0_0/0.15)];
+}
+
+.input-premium {
+  @apply mt-1 w-full rounded-xl border border-line bg-white px-4 py-3 text-sm outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30;
+}
+
+.label-premium {
+  @apply text-sm font-semibold;
+}
+
+/* ---------- animasi ringan ---------- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s ease-out both;
+}
+
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.3s; }

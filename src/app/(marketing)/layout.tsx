@@ -2,41 +2,59 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
-   return (
-      <div className="min-h-screen">
-         <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur">
-            <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-               <Link href="/" className="text-xl font-extrabold tracking-tight">
-                BarberPro
-               </Link>
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-line bg-cream/80 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+          <Link href="/" className="font-display text-xl font-bold">
+            Barber<span className="text-gold">Pro</span>
+          </Link>
 
-               <nav className="flex items-center gap-5 text-sm font-medium text-gray-600">
-                  <a href="#layanan" className="hidden sm:block">
-                    Layanan
-                  </a>
-                  <a href="#barber" className="hidden sm:block">
-                    Barber
-                  </a>
-                  <Link
-                    href="/booking"
-                    className="rounded-xl bg-gray-900 px-4 py-2 font-semibold text-white"
-                  >
-                    Booking Sekarang
-                  </Link>
-               </nav>
-            </div>
-         </header>
+          <nav className="flex items-center gap-6 text-sm font-semibold">
+            <a href="#layanan" className="hidden text-ink/60 transition hover:text-ink sm:block">
+              Layanan
+            </a>
+            <a href="#barber" className="hidden text-ink/60 transition hover:text-ink sm:block">
+              Barber
+            </a>
+            <a href="#testimoni" className="hidden text-ink/60 transition hover:text-ink sm:block">
+              Testimoni
+            </a>
+            <Link href="/booking" className="btn-gold">
+              Booking Sekarang
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-         {children}
+      {children}
 
-         <footer className="border-t border-gray-200 bg-white text-center">
-           <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-gray-500">
-             <p className="font-bold text-gray-800">BarberPro</p>
-             <p className="mt-1">
-               © {new Date().getFullYear()} BarberPro — Dibuat dengan Next.js, Supabase, dan ☕
-             </p>
-           </div>
-         </footer>
-      </div>
-   );
+      <footer className="bg-ink text-cream">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-3">
+          <div>
+            <p className="font-display text-xl font-bold">
+              Barber<span className="text-gold">Pro</span>
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-cream/60">
+              Barbershop premium dengan sistem booking modern.
+              Kesan pertama dimulai dari rambut yang rapi.
+            </p>
+          </div>
+          <div>
+            <p className="eyebrow">Jam Operasional</p>
+            <p className="mt-3 text-sm text-cream/70">Senin – Sabtu · 10.00 – 20.00 WIB</p>
+            <p className="mt-1 text-sm text-cream/70">Minggu · jadwal terpilih</p>
+          </div>
+          <div>
+            <p className="eyebrow">Kunjungi Kami</p>
+            <p className="mt-3 text-sm text-cream/70">Jl. Premium No. 12, Jakarta</p>
+            <p className="mt-1 text-sm text-cream/70">WhatsApp · +62 812-1211-212</p>
+          </div>
+        </div>
+        <p className="border-t border-cream/10 py-5 text-center text-xs text-cream/40">
+          © 2026 BarberPro · Dibangun dengan Next.js & Supabase
+        </p>
+      </footer>
+    </div>
+  );
 }
