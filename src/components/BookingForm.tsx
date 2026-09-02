@@ -117,7 +117,7 @@ export default function BookingForm({
            <h2 className="font-display text-lg font-semibold">
               Booking Berhasil
            </h2>
-           <div className="mt-3 rounded-xl bg-emerald-50 p-5 text-sm text-emerald-700 whitespace-pre-line lh-3">
+           <div className="mt-3 rounded-xl bg-emerald-50 p-5 text-sm text-emerald-700 whitespace-pre-line lh-3 text-base/7 tracking-wide">
             {serverMessage}
            </div>
         </section>
@@ -130,7 +130,7 @@ export default function BookingForm({
            <h2 className="font-display text-lg font-semibold">
               Booking Gagal
            </h2>
-           <div className="mt-3 rounded-xl p-5 whitespace-pre-line bg-red-50 text-sm text-red-700">
+           <div className="mt-3 rounded-xl p-5 whitespace-pre-line bg-red-50 text-sm text-red-700 text-base/7 tracking-wide">
             {serverMessage}
            </div>
         </section>

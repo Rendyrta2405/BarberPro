@@ -108,9 +108,11 @@ export async function createBooking(input: BookingInput) {
 
    const lines = [
       "Booking berhasil!",
-      emailOk ? "Email konfirmasi terkirim." : null,
-      waOk ? "Admin sudah diberitahu via whatsapp." : null,
-      (!emailOk || !waOk) ? "(Sebagian notifikasi gagal — booking tetap aman.)" : null
+      "-",
+      emailOk ? "- Email konfirmasi terkirim." : null,
+      emailOk ? "- (Periksa folder spam jika notif email tidak masuk)." : null,
+      waOk ? "- Admin sudah diberitahu via whatsapp." : null,
+      (!emailOk || !waOk) ? "(Sebagian notifikasi gagal — booking Anda tetap aman.)" : null
    ];
    
    // Membuang nilai null/kosong dan menggabungkannya dengan enter
