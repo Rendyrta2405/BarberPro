@@ -234,17 +234,21 @@ export default function BookingClient({
             </section>
          )}
 
-         {selectedService && selectedBarber && selectedDate && selectedSlot !== null && (
-            <BookingForm
-               serviceId={selectedService.id}
-               barberId={selectedBarber.id}
-               serviceName={selectedService.name}
-               barberName={selectedBarber.name}
-               date={selectedDate}
-               slotMinutes={selectedSlot}
-               onBooked={() => setRefreshKey((k) => k + 1)}
-            />
-         )}
+         <BookingForm
+            complete={Boolean(
+               selectedService && 
+               selectedBarber && 
+               selectedDate && 
+               selectedSlot !== null
+            )}
+            serviceId={selectedService?.id ?? 0}
+            barberId={selectedBarber?.id ?? 0}
+            serviceName={selectedService?.name ?? ""}
+            barberName={selectedBarber?.name ?? ""}
+            date={selectedDate}
+            slotMinutes={selectedSlot ?? 0}
+            onBooked={() => setRefreshKey((k) => k + 1)}
+         />
       </div>
    );
 }

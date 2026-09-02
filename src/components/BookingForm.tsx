@@ -6,6 +6,7 @@ import { minutesToTime } from "@/lib/slots";
 import { createBooking } from "@/lib/booking-actions";
 
 interface BookingFormProps {
+   complete: boolean;
    serviceId: number;
    barberId: number;
    serviceName: string;
@@ -24,6 +25,7 @@ interface FormErrors {
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
 export default function BookingForm({
+   complete,
    serviceId,
    barberId,
    serviceName,
@@ -39,6 +41,8 @@ export default function BookingForm({
    const [errors, setErrors] = useState<FormErrors>({});
    const [status, setStatus] = useState<SubmitStatus>("idle");
    const [serverMessage, setServerMessage] = useState("");
+
+   if (!complete) return null;
 
    function clearError(field: keyof FormErrors) {
       setErrors((prev: FormErrors) => ({ ...prev, [field]: undefined }));
@@ -210,5 +214,3 @@ export default function BookingForm({
       </section>
    );
 }
-
-// User sudah capek isi form -> lalu user ganti pilihan layanan / barber -> harus isi form ulang -> user capek
