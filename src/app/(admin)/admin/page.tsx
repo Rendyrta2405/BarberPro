@@ -1,3 +1,4 @@
+import { CalendarCheck, Wallet, Hourglass, Crown } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import AdminBookingCard from "@/components/AdminBookingCard";
@@ -69,46 +70,46 @@ export default async function AdminPage() {
 
    // ---------- RENDER ----------
    
-   return (
-      <section>
-         <h1 className="text-2xl font-bold">Dashboard</h1>
+     return (
+    <section>
+      <p className="eyebrow">Ringkasan</p>
+      <h1 className="font-display mt-2 text-3xl font-semibold">Dashboard</h1>
 
-         <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard
-               label="Booking Hari Ini"
-               value={String(todayBookings.length)}
-            />
-            <StatCard
-               label="Estimasi Pendapatan"
-               value={formatRupiah(revenueToday)}
-            />
-            <StatCard
-               label="Menunggu Konfirmasi"
-               value={String(pendingCount)}
-            />
-            <StatCard
-               label="Barber Tersibuk"
-               value={busiest}
-               sub={`${busiestCount} booking`}
-            />
-         </div>
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard
+          label="Booking Hari Ini"
+          value={String(todayBookings.length)}
+          icon={<CalendarCheck size={18} />}
+        />
+        <StatCard
+          label="Estimasi Pendapatan"
+          value={formatRupiah(revenueToday)}
+          icon={<Wallet size={18} />}
+        />
+        <StatCard
+          label="Menunggu Konfirmasi"
+          value={String(pendingCount)}
+          icon={<Hourglass size={18} />}
+        />
+        <StatCard
+          label="Barber Tersibuk"
+          value={busiest}
+          sub={`${busiestCount} booking`}
+          icon={<Crown size={18} />}
+        />
+      </div>
 
-         <h2 className="mt-8 mb-3 text-lg font-bold">Semua Booking</h2>
+      <h2 className="font-display mt-10 mb-4 text-xl font-semibold">Semua Booking</h2>
 
-         {all.length === 0 ? (
-            <p className="text-gray-500">
-               Belum ada booking masuk.
-            </p>
-         ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-               {all.map((booking) => (
-                  <AdminBookingCard key={booking.id} 
-                     booking={booking} 
-                  />
-               ))}
-            </div>
-         )}
-         
-      </section>
-   );
+      {all.length === 0 ? (
+        <p className="text-cream/50">Belum ada booking masuk.</p>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {all.map((booking) => (
+            <AdminBookingCard key={booking.id} booking={booking} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }

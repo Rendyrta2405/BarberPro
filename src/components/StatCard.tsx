@@ -1,19 +1,23 @@
+import type { ReactNode } from "react";
+
 interface StatCardProps {
-   label: string;
-   value: string;
-   sub?: string;
+  label: string;
+  value: string;
+  sub?: string;
+  icon?: ReactNode;
 }
 
-export default function StatCard({ label, value, sub }: StatCardProps) {
-   return (      
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-         <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-           {label}
-         </p>
-         <p className="mt-1 text-xl font-extrabold text-gray-900">
-            {value}
-         </p>
-         {sub && <p className="mt-1 text-xs text-gray-500">{sub}</p>}
+export default function StatCard({ label, value, sub, icon }: StatCardProps) {
+  return (
+    <div className="rounded-2xl border border-cream/10 bg-ink-soft p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-bold uppercase tracking-widest text-cream/50">
+          {label}
+        </p>
+        {icon && <span className="text-gold">{icon}</span>}
       </div>
-   );
+      <p className="font-display mt-2 text-2xl font-bold">{value}</p>
+      {sub && <p className="mt-1 text-xs text-cream/50">{sub}</p>}
+    </div>
+  );
 }

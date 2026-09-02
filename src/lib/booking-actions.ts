@@ -106,12 +106,15 @@ export async function createBooking(input: BookingInput) {
    const emailOk = emailResult.status === "fulfilled";
    const waOk = waResult.status === "fulfilled";
 
-   let message = "Booking berhasil!";
-   if (emailOk) message += " Email konfirmasi terkirim.";
-   if (waOk) message += " Admin sudah diberitahu via whatsapp.";
-   if (!emailOk || !waOk) {
-      message += " (Sebagian notifikasi gagal — booking tetap aman.)"
-   }
+   const lines = [
+      "Booking berhasil!",
+      emailOk ? "Email konfirmasi terkirim." : null,
+      waOk ? "Admin sudah diberitahu via whatsapp." : null,
+      (!emailOk || !waOk) ? "(Sebagian notifikasi gagal — booking tetap aman.)" : null
+   ];
+   
+   // Membuang nilai null/kosong dan menggabungkannya dengan enter
+   let message = lines.filter(Boolean).join("\n");
    
    return { ok: true as const, message };
 }

@@ -6,211 +6,218 @@ import { minutesToTime } from "@/lib/slots";
 import { createBooking } from "@/lib/booking-actions";
 
 interface BookingFormProps {
-   complete: boolean;
-   serviceId: number;
-   barberId: number;
-   serviceName: string;
-   barberName: string;
-   date: string;
-   slotMinutes: number;
-   onBooked: () => void;
+  complete: boolean;
+  serviceId: number;
+  barberId: number;
+  serviceName: string;
+  barberName: string;
+  date: string;
+  slotMinutes: number;
+  onBooked: () => void;
 }
 
 interface FormErrors {
-   name?: string;
-   phone?: string;
-   email?: string;
+  name?: string;
+  phone?: string;
+  email?: string;
 }
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
 export default function BookingForm({
-   complete,
-   serviceId,
-   barberId,
-   serviceName,
-   barberName,
-   date,
-   slotMinutes,
-   onBooked,
+  complete,
+  serviceId,
+  barberId,
+  serviceName,
+  barberName,
+  date,
+  slotMinutes,
+  onBooked,
 }: BookingFormProps) {
-   const [customerName, setCustomerName] = useState("");
-   const [customerPhone, setCustomerPhone] = useState("");
-   const [customerEmail, setCustomerEmail] = useState("");
-   const [customerNotes, setCustomerNotes] = useState("");
-   const [errors, setErrors] = useState<FormErrors>({});
-   const [status, setStatus] = useState<SubmitStatus>("idle");
-   const [serverMessage, setServerMessage] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerNotes, setCustomerNotes] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [serverMessage, setServerMessage] = useState("");
 
-   if (!complete) return null;
+  function clearError(field: keyof FormErrors) {
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  }
 
-   function clearError(field: keyof FormErrors) {
-      setErrors((prev: FormErrors) => ({ ...prev, [field]: undefined }));
-   }
+  function validate(): boolean {
+    const newErrors: FormErrors = {};
 
-   function validate(): boolean {
-      const newErrors: FormErrors = {};
+    if (customerName.trim().length < 3) {
+      newErrors.name = "Nama minimal 3 karakter.";
+    }
+    if (!/^\S+@\S+\.\S+$/.test(customerEmail.trim())) {
+      newErrors.email = "Email tidak valid. Contoh: nama@gmail.com";
+    }
+    if (!isValidIndonesianPhone(customerPhone)) {
+      newErrors.phone = "Nomor tidak valid. Contoh: 081234567890";
+    }
 
-      if (customerName.trim().length < 3) {
-         newErrors.name = "Nama minimal 3 karakter.";
-      }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
 
-      if (!isValidIndonesianPhone(customerPhone)) {
-         newErrors.phone = "Nomor tidak valid. Contoh: 081234567890";
-      }
+  async function handleSubmit() {
+    if (!validate()) return;
 
-      if (!/^\S+@\S+\.\S+$/.test(customerEmail.trim())) {
-         newErrors.email = "Email tidak valid. Contoh: nama@gmail.com";
-      }
+    setStatus("loading");
 
-      setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-   }
+    const result = await createBooking({
+      serviceId,
+      barberId,
+      date,
+      slotMinutes,
+      customerName: customerName.trim(),
+      customerPhone: normalizePhone(customerPhone),
+      customerEmail: customerEmail.trim(),
+      customerNotes: customerNotes.trim(),
+    });
 
-   async function handleSubmit() {
-      if (!validate()) return;
+    setStatus(result.ok ? "success" : "error");
+    setServerMessage(result.message);
 
-      setStatus("loading");
+    if (result.ok) onBooked();
+  }
 
-      const result = await createBooking({
-         serviceId,
-         barberId,
-         date,
-         slotMinutes,
-         customerName: customerName.trim(),
-         customerPhone: normalizePhone(customerPhone),
-         customerEmail: customerEmail.trim(),
-         customerNotes: customerNotes.trim(),
-      });
-
-      setStatus(result.ok ? "success" : "error");
-      setServerMessage(result.message);
-
-      if (result.ok) {
-         onBooked();
-      }
-   }
-
-   return (
-      <section className="rounded-xl border border-gray-200 bg-white p-4">
-         <h2 className="text-sm font-bold uppercase tracking-widest text-gray-400">
-           5. Data Diri
-         </h2>
-
-         <p className="mt-2 text-sm text-gray-600">
-            {serviceName} • {barberName} • {date} • {minutesToTime(slotMinutes)}
-         </p>
-
-         <div className="mt-4 space-y-4">
-            <div>
-               <label htmlFor="name" className="text-sm font-medium">
-                  Nama
-               </label>
-               <input
-                  id="name"
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => {
-                     setCustomerName(e.target.value);
-                     clearError("name");
-                  }}
-                  placeholder="Nama kamu"
-                  className={`mt-1 w-full rounded-xl border-2 bg-white p-3 text-sm ${
-                     errors.name ? "border-red-500" : "border-gray-200" 
-                  }`}
-               />
-               {errors.name && (
-                   <p className="mt-1 text-xs text-red-500">
-                      {errors.name}
-                   </p>
-               )}
-            </div>
-
-            <div>
-               <label htmlFor="phone" className="text-sm font-medium">
-                  Nomor WhatsApp
-               </label>
-               <input 
-                  id="phone" 
-                  type="tel" 
-                  value={customerPhone}
-                  onChange={(e) => {
-                     setCustomerPhone(e.target.value);
-                     clearError("phone");
-                  }}
-                  placeholder="08xxxxxxxxxx"
-                  className={`mt-1 w-full rounded-xl border-2 bg-white p-3 text-sm ${
-                    errors.phone 
-                     ? "border-red-500" 
-                     : "border-gray-200"
-                  }`}
-               />
-               {errors.phone && (
-                   <p className="mt-1 text-xs text-red-500">
-                      {errors.phone}
-                   </p>
-               )}
-            </div>
-
-            <div>
-               <label htmlFor="email" className="text-sm font-medium">Email</label>
-               <input
-                  id="email"
-                  type="email"
-                  value={customerEmail}
-                  onChange={(e) => {
-                     setCustomerEmail(e.target.value);
-                     clearError("email");
-                  }}
-                  placeholder="nama@gmail.com"
-                  className={`mt-1 w-full rounded-xl border-2 bg-white p-3 text-sm ${
-                  errors.email 
-                     ? "border-red-500" 
-                     : "border-gray-200"
-                }`}
-               />
-               {errors.email && (
-                  <p className="mt-1 text-xs text-red-500">
-                      {errors.email}
-                  </p>
-               )}
-            </div>
-
-            <div>
-               <label htmlFor="notes" className="text-sm font-medium">
-                  Catatan (opsional)
-               </label>
-               <textarea 
-                  id="notes"
-                  value={customerNotes}
-                  onChange={(e) => setCustomerNotes(e.target.value)}
-                  placeholder="Contoh: jangan terlalu pendek"
-                  rows={3}
-                  className="mt-1 w-full rounded-xl border-2 border-gray-200 bg-white p-3 text-sm"
-               />
-            </div>
-
-            <button
-               type="button"
-               onClick={handleSubmit}
-               disabled={status === "loading"}
-               className="w-full rounded-xl bg-gray-900 px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-               {status === "loading" ? "Menyimpan..." : "Konfirmasi Booking"}
-            </button>
-
-            {status === "success" && (
-               <p className="rounded-xl bg-green-50 p-3 text-sm text-green-700">
-                  {serverMessage}
-               </p>
-            )}
-
-            {status === "error" && (
-               <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-                  {serverMessage}
-               </p>
-            )}
-         </div>
+  /* Saat belum lengkap: tampilkan kartu ringkasan "hidup".
+     Component tetap MOUNTED (state aman), hanya isinya berbeda. */
+  if (!complete && status !== "success") {
+    return (
+      <section className="card p-5">
+        <h2 className="font-display text-lg font-semibold">
+           Ringkasan
+        </h2>
+        <ul className="mt-4 space-y-2 text-sm">
+          <li className={serviceName ? "text-ink" : "text-ink/40"}>
+            {serviceName || "Pilih layanan"}
+          </li>
+          <li className={barberName ? "text-ink" : "text-ink/40"}>
+            {barberName || "Pilih barber"}
+          </li>
+          <li className={date ? "text-ink" : "text-ink/40"}>
+            {date || "Pilih tanggal"}
+          </li>
+        </ul>
+        <p className="mt-5 rounded-xl bg-ink/5 p-3 text-xs text-ink/50">
+          Lengkapi pilihanmu — ringkasan & form akan terbuka di sini.
+        </p>
       </section>
-   );
+    );
+  }
+
+  if (status === "success") {
+     return (
+        <section className="card p-5">
+           <h2 className="font-display text-lg font-semibold">
+              Booking Berhasil
+           </h2>
+           <div className="mt-3 rounded-xl bg-emerald-50 p-5 text-sm text-emerald-700 whitespace-pre-line lh-3">
+            {serverMessage}
+           </div>
+        </section>
+     );
+  }
+   
+  if (status === "error") {
+     return (
+        <section className="card p-5">
+           <h2 className="font-display text-lg font-semibold">
+              Booking Gagal
+           </h2>
+           <div className="mt-3 rounded-xl p-5 whitespace-pre-line bg-red-50 text-sm text-red-700">
+            {serverMessage}
+           </div>
+        </section>
+     );
+  }
+
+  return (
+    <section className="card p-5">
+      <h2 className="font-display text-lg font-semibold">Ringkasan</h2>
+
+      <div className="mt-4 rounded-xl bg-ink p-4 text-cream">
+        <p className="text-sm font-bold text-gold">{serviceName}</p>
+        <p className="mt-1 text-xs text-cream/70">
+          {barberName} · {date} · {minutesToTime(slotMinutes)} WIB
+        </p>
+      </div>
+
+      <div className="mt-5 space-y-4">
+        <div>
+          <label htmlFor="name" className="label-premium">Nama</label>
+          <input
+            id="name"
+            type="text"
+            value={customerName}
+            onChange={(e) => {
+              setCustomerName(e.target.value);
+              clearError("name");
+            }}
+            placeholder="Nama kamu"
+            className="input-premium"
+          />
+          {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="email" className="label-premium">Email</label>
+          <input
+            id="email"
+            type="email"
+            value={customerEmail}
+            onChange={(e) => {
+              setCustomerEmail(e.target.value);
+              clearError("email");
+            }}
+            placeholder="nama@gmail.com"
+            className="input-premium"
+          />
+          {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="label-premium">Nomor WhatsApp</label>
+          <input
+            id="phone"
+            type="tel"
+            value={customerPhone}
+            onChange={(e) => {
+              setCustomerPhone(e.target.value);
+              clearError("phone");
+            }}
+            placeholder="08xxxxxxxxxx"
+            className="input-premium"
+          />
+          {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="notes" className="label-premium">Catatan (opsional)</label>
+          <textarea
+            id="notes"
+            value={customerNotes}
+            onChange={(e) => setCustomerNotes(e.target.value)}
+            placeholder="Contoh: jangan terlalu pendek"
+            rows={3}
+            className="input-premium"
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={status === "loading"}
+          className="btn-gold w-full disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {status === "loading" ? "Menyimpan..." : "Konfirmasi Booking"}
+        </button>
+      </div>
+    </section>
+  );
 }
