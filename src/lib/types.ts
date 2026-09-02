@@ -5,6 +5,7 @@ export interface Service {
    duration: number;
    description: string;
    is_active: boolean;
+   image_url: string | null;
 }
 
 export interface Barber {
@@ -12,6 +13,8 @@ export interface Barber {
    name: string;
    title: string;
    is_active: boolean;
+   photo_url: string | null;
+   bio: string | null;
 }
 
 export interface WorkingHour {

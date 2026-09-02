@@ -20,25 +20,32 @@ export default async function HomePage() {
    
   return (
      <main>
-        <section className="bg-gray-900 text-white">
-           <div className="mx-auto max-w-5xl px-4 py-20 text-center">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                Barbershop Modern
-              </p>
-              <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">
-                Tampil Rapi, Tanpa Antre.
-              </h1>
-              <p className="mx-auto mt-4 max-w-xl text-gray-300">
-                  BarberPro membawa pengalaman barbershop ke era digital: pilih layanan, pilih barber favoritmu, dan amankan jam kamu dalam satu menit.
-              </p>
-              <Link
+        <section className="relative bg-gray-900 text-white">
+           <img
+             src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1600&q=60"
+             alt=""
+             className="absolute inset-0 h-full w-full object-cover opacity-30"
+           />
+           <div className="relative mx-auto max-w-5xl px-4 py-24 text-center">
+             <p className="text-xs font-bold uppercase tracking-widest text-gray-300">
+               Barbershop Modern
+             </p>
+             <h1 className="mt-4 text-4xl font-extrabold sm:text-5xl">
+               Tampil Rapi, Tanpa Antre.
+             </h1>
+             <p className="mx-auto mt-4 max-w-xl text-gray-200">
+               BarberPro membawa pengalaman barbershop ke era digital:
+               pilih layanan, pilih barber favoritmu, dan amankan jam kamu
+               dalam satu menit.
+             </p>
+             <Link
                href="/booking"
                className="mt-8 inline-block rounded-xl bg-white px-6 py-3 font-bold text-gray-900"
              >
-                Booking Sekarang
-              </Link>
+               Booking Sekarang
+             </Link>
            </div>
-        </section>
+         </section>
 
         <section className="mx-auto max-w-5xl px-4 py-16">
            <h2 className="text-center text-2xl font-extrabold text-gray-900">
