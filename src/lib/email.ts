@@ -72,7 +72,7 @@ const STATUS_CONFIG: Record<
     statusBorder: "#ef4444",
     statusBg: "#fef2f2",
     statusText: "#b91c1c",
-    cta: { label: "Booking Ulang", href: "https://your-domain.vercel.app/booking" },
+    cta: { label: "Booking Ulang", href: "https://barberpro.rrdevs.my.id/booking" },
   },
 };
 

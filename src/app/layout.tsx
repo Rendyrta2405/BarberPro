@@ -21,6 +21,23 @@ export const metadata: Metadata = {
   },
   description:
     "Kesan pertama dimulai dari rambut yang rapi. Booking barber favoritmu dalam satu menit.",
+   openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "https://barberpro.rrdevs.my.id",
+    siteName: "BarberPro",
+    title: "BarberPro — Barbershop Premium, Booking Tanpa Antre",
+    description:
+      "Kesan pertama dimulai dari rambut yang rapi. Booking barber favoritmu dalam satu menit.",
+    images: [
+      {
+        url: "https://barberpro.rrdevs.my.id/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "BarberPro — Barbershop Premium, Booking Tanpa Antrep",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
