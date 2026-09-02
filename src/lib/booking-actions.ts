@@ -89,6 +89,7 @@ export async function createBooking(input: BookingInput) {
          barberName: barber.name,
          date: data.date,
          timeLabel: minutesToTime(data.slotMinutes),
+         status: "pending",
       }),
       sendWhatsAppToAdmin(
          buildBookingMessage({
