@@ -60,7 +60,7 @@ const STATUS_CONFIG: Record<
     statusBorder: "#10b981",
     statusBg: "#ecfdf5",
     statusText: "#047857",
-    cta: { label: "Booking Lagi", href: "https://your-domain.vercel.app/booking" },
+    cta: { label: "Booking Lagi", href: "https://barberpro.rrdevs.my.id/booking" },
   },
   cancelled: {
     subjectPrefix: "Booking Dibatalkan",
