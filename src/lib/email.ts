@@ -97,7 +97,7 @@ export async function sendBookingEmail(p: EmailParams) {
   const cfg = STATUS_CONFIG[p.status];
 
   await resend.emails.send({
-    from: "BarberPro <barberpro@rrdevs.my.id>",
+    from: "BarberPro <barberpro@mail.rrdevs.my.id>",
     to: p.toEmail,
     subject: `${cfg.subjectPrefix} — ${p.date} (${p.timeLabel})`,
     html: buildHtml({ ...p, cfg }),
