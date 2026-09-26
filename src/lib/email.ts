@@ -1,4 +1,7 @@
 import { Resend } from "resend";
+import { STORE } from "@/lib/data";
+import fs from 'fs';
+import path from 'path';
 
 export type BookingStatus = "pending" | "confirmed" | "done" | "cancelled";
 
@@ -29,7 +32,7 @@ const STATUS_CONFIG: Record<
   }
 > = {
   pending: {
-    subjectPrefix: "Konfirmasi Booking BarberPro",
+    subjectPrefix: `Konfirmasi Booking ${STORE.name}`,
     heading: "Booking Diterima ✔",
     body: (name) =>
       `Halo <strong>${name}</strong>, terima kasih telah mempercayakan perawatan rambut Anda kepada kami. Sesi booking Anda telah berhasil dicatat ke sistem kami.`,
@@ -51,7 +54,7 @@ const STATUS_CONFIG: Record<
     statusText: "#0369a1",
   },
   done: {
-    subjectPrefix: "Sesi BarberPro Selesai ✨",
+    subjectPrefix: `Sesi ${STORE.name} Selesai ✨`,
     heading: "Sesi Selesai ✨",
     body: (name) =>
       `Halo <strong>${name}</strong>, terima kasih sudah berkunjung. Kami senang bisa melayani Anda hari ini. Semoga penampilan barunya membawa percaya diri sepanjang minggu.`,
@@ -77,18 +80,15 @@ const STATUS_CONFIG: Record<
 };
 
 const SOCIAL_LINKS = {
-  instagram: "https://instagram.com/universe.dev.id",
-  facebook: "https://facebook.com/universe.dev.id",
-  linkedin: "https://linkedin.com/in/developer-id",
+  whatsapp: "https://wa.me/6283171125657?text=Halo+RR+Devs",
+  instagram: "https://instagram.com/rrdevs.my.id",
+  facebook: "https://facebook.com/rrdevs.my.id",
 };
 
-const ICON_URL = {
-  instagram:
-    "https://img.icons8.com/?size=100&id=BrU2BBoRXiWq&format=png&color=000000",
-  facebook:
-    "https://img.icons8.com/?size=100&id=kQzCK4emnaD2&format=png&color=228BE6",
-  linkedin:
-    "https://img.icons8.com/?size=100&id=13930&format=png&color=000000",
+const CID_URL = {
+  whatsapp: "cid:wa-logo",
+  instagram: "cid:ig-logo",
+  facebook: "cid:fb-logo",
 };
 
 // ---------- fungsi utama ----------
@@ -96,11 +96,32 @@ export async function sendBookingEmail(p: EmailParams) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const cfg = STATUS_CONFIG[p.status];
 
+  const waBuffer = fs.readFileSync(path.join(process.cwd(), "public/images/whatsapp.png")).toString('base64');
+  const igBuffer = fs.readFileSync(path.join(process.cwd(), "public/images/instagram.png")).toString('base64');
+  const fbBuffer = fs.readFileSync(path.join(process.cwd(), "public/images/facebook.png")).toString('base64');
+
   await resend.emails.send({
-    from: "BarberPro <barberpro@mail.rrdevs.my.id>",
+    from: `${STORE.fromName} <barberpro@mail.rrdevs.my.id>`,
     to: p.toEmail,
     subject: `${cfg.subjectPrefix} — ${p.date} (${p.timeLabel})`,
     html: buildHtml({ ...p, cfg }),
+    attachments: [
+    {
+      content: waBuffer,
+      filename: 'whatsapp.png',
+      contentId: 'wa-logo',
+    },
+    {
+      content: igBuffer,
+      filename: 'instagram.png',
+      contentId: 'ig-logo',
+    },
+    {
+      content: fbBuffer,
+      filename: 'facebook.png',
+      contentId: 'fb-logo',
+    }
+  ],
   });
 }
 
@@ -119,7 +140,7 @@ function buildHtml(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booking BarberPro</title>
+  <title>Booking ${STORE.name}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f9fafb;padding:32px 16px;">
@@ -132,7 +153,7 @@ function buildHtml(
           <tr>
             <td style="padding:32px 24px;">
               <p style="margin:0 0 24px;font-size:20px;font-weight:bold;letter-spacing:-0.5px;color:#1e1e1e;">
-                Barber<span style="color:#6366f1;">Pro</span>
+                ${STORE.logoPlain}<span style="color: #c9a24b;">${STORE.logoAccent}</span>
               </p>
 
               <h2 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#101828;line-height:1.3;">
@@ -187,7 +208,7 @@ function buildHtml(
 
               <p style="margin:0;font-size:14px;color:#475467;line-height:1.5;">
                 Sampai jumpa di lokasi,<br>
-                <strong>Tim BarberPro</strong>
+                <strong>Tim ${STORE.name}</strong>
               </p>
             </td>
           </tr>
@@ -200,18 +221,21 @@ function buildHtml(
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
                 <tr>
                   <td style="padding:0 12px;">
-                    <a href="${SOCIAL_LINKS.instagram}" target="_blank"><img src="${ICON_URL.instagram}" width="20" height="20" alt="Instagram" style="display:block;"></a>
+                    <a href="${SOCIAL_LINKS.whatsapp}" target="_blank"><img src="${CID_URL.whatsapp}" width="20" height="20" alt="WhatsApp" style="display:block;"></a>
                   </td>
                   <td style="padding:0 12px;">
-                    <a href="${SOCIAL_LINKS.facebook}" target="_blank"><img src="${ICON_URL.facebook}" width="20" height="20" alt="Facebook" style="display:block;"></a>
+                    <a href="${SOCIAL_LINKS.instagram}" target="_blank"><img src="${CID_URL.instagram}" width="20" height="20" alt="Instagram" style="display:block;"></a>
                   </td>
                   <td style="padding:0 12px;">
-                    <a href="${SOCIAL_LINKS.linkedin}" target="_blank"><img src="${ICON_URL.linkedin}" width="20" height="20" alt="LinkedIn" style="display:block;"></a>
+                    <a href="${SOCIAL_LINKS.facebook}" target="_blank"><img src="${CID_URL.facebook}" width="20" height="20" alt="Facebook" style="display:block;"></a>
                   </td>
                 </tr>
               </table>
               <p style="margin:20px 0 0;font-size:12px;color:#98a2b3;text-align:center;line-height:1.4;">
-                &copy; ${new Date().getFullYear()} BarberPro Indonesia.<br>
+                &copy; ${new Date().getFullYear()} ${STORE.name}.
+                <br/>
+                ${STORE.credit}
+                <br/>
                 Email ini dikirim otomatis — jangan balas ke alamat ini.
               </p>
             </td>

@@ -184,4 +184,4 @@ MIT — free to use for learning and commercial projects.
 
 ---
 
-Built with ☕by **[Rafael.dev](https://github.com/Rendyrta2405)**
+Built with ☕ by **[Rafael.dev](https://github.com/Rendyrta2405)**

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { STORE } from "@/lib/data";
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
@@ -7,7 +8,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-20 border-b border-line bg-cream/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/" className="font-display text-xl font-bold">
-            Barber<span className="text-gold">Pro</span>
+            {STORE.logoPlain}<span className="text-gold">{STORE.logoAccent}</span>
           </Link>
 
           <nav className="flex items-center gap-6 text-sm font-semibold">
@@ -33,7 +34,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-3">
           <div>
             <p className="font-display text-xl font-bold">
-              Barber<span className="text-gold">Pro</span>
+              {STORE.logoPlain}<span className="text-gold">{STORE.logoAccent}</span>
             </p>
             <p className="mt-3 text-sm leading-relaxed text-cream/60">
               Barbershop premium dengan sistem booking modern.
@@ -52,7 +53,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
         <p className="border-t border-cream/10 py-5 text-center text-xs text-cream/40">
-          © 2026 BarberPro · Dibangun dengan Next.js & Supabase
+          © {new Date().getFullYear()} {STORE.name} · {STORE.credit}
         </p>
       </footer>
     </div>

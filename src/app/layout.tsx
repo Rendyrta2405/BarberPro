@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { STORE } from "@/lib/data";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -16,8 +17,8 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "BarberPro — Barbershop Premium, Booking Tanpa Antre",
-    template: "%s · BarberPro",
+    default: `${STORE.name} — ${STORE.tagline}`,
+    template: `%s · ${STORE.name}`,
   },
   description:
     "Kesan pertama dimulai dari rambut yang rapi. Booking barber favoritmu dalam satu menit.",
@@ -25,8 +26,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     url: "https://barberpro.rrdevs.my.id",
-    siteName: "BarberPro",
-    title: "BarberPro — Barbershop Premium, Booking Tanpa Antre",
+    siteName: `${STORE.name}`,
+    title: `${STORE.name} — ${STORE.tagline}`,
     description:
       "Kesan pertama dimulai dari rambut yang rapi. Booking barber favoritmu dalam satu menit.",
     images: [
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
         url: "https://barberpro.rrdevs.my.id/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "BarberPro — Barbershop Premium, Booking Tanpa Antrep",
+        alt: `${STORE.name} — ${STORE.tagline}`,
       },
     ],
   },

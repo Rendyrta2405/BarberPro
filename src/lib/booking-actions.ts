@@ -37,6 +37,25 @@ export async function createBooking(input: BookingInput) {
 
    const data = parsed.data;
 
+    // Pagar server: tanggal wajib di rentang hari ini s.d. +60 hari (zona Jakarta).
+   const todayStr = new Date().toLocaleDateString("en-CA", { 
+      timeZone: "Asia/Jakarta" 
+   });
+
+   const maxDateObj = new Date();
+   maxDateObj.setDate(maxDateObj.getDate() + 60);
+   const maxStr = maxDateObj.toLocaleDateString("en-CA", {
+      timeZone: "Asia/Jakarta",
+   });
+
+   if (data.date < todayStr || data.date > maxStr) {
+      return {
+         ok: false as const,
+         message: "Tanggal di luar rentang pemesanan (hari ini sampai 60 hari ke depan).",
+      };
+   }
+   
+
    const [serviceResult, barberResult] = await Promise.all([
       supabase.from("services").select("name, duration").eq("id", data.serviceId).single(),
       supabase.from("barbers").select("name").eq("id", data.barberId).single(),
@@ -108,11 +127,11 @@ export async function createBooking(input: BookingInput) {
    const waOk = waResult.status === "fulfilled";
 
    const lines = [
-      "Booking berhasil!",
+      "Booking berhasil.",
+      // Ganti tag HTML agar menyatu dengan baik dalam satu string
       emailOk ? "Email konfirmasi terkirim." : null,
-      emailOk ? "(Periksa folder spam jika notif email tidak masuk)." : null,
-      waOk ? "Admin sudah diberitahu via whatsapp." : null,
-      (!emailOk || !waOk) ? "(Sebagian notifikasi gagal — booking Anda tetap aman.)" : null
+      waOk ? "Admin sudah diberitahu via whatsapp." : "Gagal mengirim notif ke admin.",
+      emailOk ? "<small class='text-gray-500 block mt-1'>Periksa folder spam jika notif email tidak masuk.</small>" : null,
    ];
    
    // Membuang nilai null/kosong dan menggabungkannya dengan enter

@@ -1,14 +1,19 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { STORE } from "@/lib/data";
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+   
   return (
     <div className="min-h-screen bg-ink text-cream">
       <header className="sticky top-0 z-20 border-b border-cream/10 bg-ink/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/admin" className="font-display text-lg font-bold">
-            Barber<span className="text-gold">Pro</span>
+            {STORE.logoPlain}<span className="text-gold">{STORE.logoAccent}</span>
             <span className="ml-2 rounded-full border border-gold/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gold">
               Admin
             </span>
@@ -22,7 +27,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             >
               Lihat Website
             </Link>
-            <LogoutButton />
+            {user && <LogoutButton />}
           </div>
         </div>
       </header>

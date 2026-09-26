@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginAdmin } from "@/lib/auth-actions";
+import { STORE } from "@/lib/data";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function AdminLoginPage() {
     <section className="mx-auto max-w-md rounded-2xl border border-cream/10 bg-ink-soft p-8">
       <p className="eyebrow">Area Admin</p>
       <h1 className="font-display mt-2 text-3xl font-semibold">Masuk</h1>
-      <p className="mt-2 text-sm text-cream/60">Khusus staf BarberPro.</p>
+      <p className="mt-2 text-sm text-cream/60">Khusus staf {STORE.name}.</p>
 
       <div className="mt-6 space-y-4">
         <div>
@@ -41,7 +42,7 @@ export default function AdminLoginPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@barberpro.com"
+            placeholder="your@email.com"
             className="mt-1 w-full rounded-xl border border-cream/15 bg-ink px-4 py-3 text-sm outline-none transition focus:border-gold"
           />
         </div>
@@ -53,7 +54,7 @@ export default function AdminLoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="●●●●●●●●"
             className="mt-1 w-full rounded-xl border border-cream/15 bg-ink px-4 py-3 text-sm outline-none transition focus:border-gold"
           />
         </div>

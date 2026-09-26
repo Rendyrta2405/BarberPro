@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { isValidIndonesianPhone, normalizePhone } from "@/lib/phone";
 import { minutesToTime } from "@/lib/slots";
 import { createBooking } from "@/lib/booking-actions";
+import Link from "next/link";
 
 interface BookingFormProps {
   complete: boolean;
@@ -85,6 +86,28 @@ export default function BookingForm({
     if (result.ok) onBooked();
   }
 
+  function resetForm() {
+     setCustomerName("");
+     setCustomerPhone("");
+     setCustomerEmail("");
+     setCustomerNotes("");
+     setErrors({});
+     setStatus("idle");
+     setServerMessage("");
+  }
+
+  function clearServerNote() {
+    if (status === "error") {
+      setStatus("idle");
+      setServerMessage("");
+    }
+  }
+
+  // Patroli: kalau pilihan dari induk berubah, catatan gagal sudah basi → cabut.
+  useEffect(() => {
+    clearServerNote();
+  }, [date, slotMinutes, serviceId, barberId]);
+
   /* Saat belum lengkap: tampilkan kartu ringkasan "hidup".
      Component tetap MOUNTED (state aman), hanya isinya berbeda. */
   if (!complete && status !== "success") {
@@ -117,22 +140,22 @@ export default function BookingForm({
            <h2 className="font-display text-lg font-semibold">
               Booking Berhasil
            </h2>
-           <div className="mt-3 rounded-xl bg-emerald-50 p-5 text-sm text-emerald-700 whitespace-pre-line lh-3 text-base/7 tracking-wide">
-            {serverMessage}
-           </div>
-        </section>
-     );
-  }
-   
-  if (status === "error") {
-     return (
-        <section className="card p-5">
-           <h2 className="font-display text-lg font-semibold">
-              Booking Gagal
-           </h2>
-           <div className="mt-3 rounded-xl p-5 whitespace-pre-line bg-red-50 text-sm text-red-700 text-base/7 tracking-wide">
-            {serverMessage}
-           </div>
+           <div className="mt-3 rounded-xl bg-emerald-50 p-5 text-sm text-emerald-700 whitespace-pre-line lh-3 text-base/7 tracking-wide"
+              dangerouslySetInnerHTML={{ __html: serverMessage }} />
+
+           <button
+              type="button"
+              onClick={resetForm}
+              className="btn-gold mt-4 w-full"
+           >
+              Buat booking lain
+           </button>
+           <Link
+              href="/"
+              className="btn-gold mt-4 w-full text-center"
+           >
+              Selesai
+           </Link>
         </section>
      );
   }
@@ -190,6 +213,7 @@ export default function BookingForm({
             onChange={(e) => {
               setCustomerPhone(e.target.value);
               clearError("phone");
+              clearServerNote();
             }}
             placeholder="08xxxxxxxxxx"
             className="input-premium"
@@ -208,6 +232,12 @@ export default function BookingForm({
             className="input-premium"
           />
         </div>
+
+        {status === "error" && (
+          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 whitespace-pre-line">
+            {serverMessage}
+          </p>
+        )}
 
         <button
           type="button"

@@ -39,9 +39,17 @@ export default function BookingClient({
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [bookedRanges, setBookedRanges] = useState<BookedRange[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [dateNote, setDateNote] = useState("");
 
-  const today = new Date().toLocaleDateString("en-CA");
+  // Ambil tanggal hari ini
+  const todayObj = new Date();
+  const today = todayObj.toLocaleDateString("en-CA");
 
+  // Tambah 60 hari dengan memanipulasi objek tanggal secara murni
+  const maxDateObj = new Date();
+  maxDateObj.setDate(maxDateObj.getDate() + 60);
+  const maxDate = maxDateObj.toLocaleDateString("en-CA");
+   
   const selectedService = services.find((s) => s.id === selectedServiceId);
   const selectedBarber = barbers.find((b) => b.id === selectedBarberId);
 
@@ -97,9 +105,21 @@ export default function BookingClient({
   }
 
   function chooseDate(value: string) {
+    if (value < today || value > maxDate) {
+       setDateNote("Booking hanya bisa sampai 60 hari ke depan. Coba pilih tanggal lain");
+       return;
+    };
+
+    setDateNote("");
     setSelectedDate(value);
     setSelectedSlot(null);
   }
+
+  // Benarkah SEMUA slot di tanggal ini sudah terisi?
+  const allTaken =
+     selectedService !== undefined &&
+     slots.length > 0 &&
+     slots.every((slot) => isSlotTaken(slot, selectedService.duration, bookedRanges));
 
   return (
     <div>
@@ -107,7 +127,7 @@ export default function BookingClient({
         <p className="eyebrow">Booking</p>
         <h1 className="title-display mt-2">Amankan Kursimu</h1>
         <p className="mt-3 text-ink/60">
-          Empat langkah cepat — selesai dalam kurang dari satu menit.
+          Empat langkah cepat — selesai dalam 1 menit.
         </p>
       </header>
 
@@ -179,9 +199,11 @@ export default function BookingClient({
               type="date"
               value={selectedDate}
               min={today}
+              max={maxDate}
               onChange={(event) => chooseDate(event.target.value)}
               className="input-premium mt-4"
             />
+            {dateNote && <p className="mt-2 text-xs text-red-600">{dateNote}</p>}
           </section>
 
           {selectedService && selectedBarber && selectedDate && (
@@ -190,41 +212,55 @@ export default function BookingClient({
 
               {workingHour ? (
                 slots.length > 0 ? (
-                  <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
-                    {slots.map((slot) => {
-                      const taken = isSlotTaken(
-                        slot,
-                        selectedService.duration,
-                        bookedRanges
-                      );
-                      const isSelected = slot === selectedSlot;
-                      return (
-                        <button
-                          key={slot}
-                          type="button"
-                          disabled={taken}
-                          onClick={() => setSelectedSlot(slot)}
-                          className={`rounded-xl border-2 py-2 text-sm font-bold transition ${
-                            taken
-                              ? "cursor-not-allowed border-line bg-ink/5 text-ink/30 line-through"
-                              : isSelected
-                                ? "border-gold bg-gold text-ink"
-                                : "border-line bg-white hover:border-ink/30"
-                          }`}
-                        >
-                          {minutesToTime(slot)}
-                        </button>
-                      );
-                    })}
-                  </div>
+                   <>
+                     <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6">
+                       {slots.map((slot) => {
+                         const taken = isSlotTaken(
+                           slot,
+                           selectedService.duration,
+                           bookedRanges
+                         );
+                         const isSelected = slot === selectedSlot;
+                         return (
+                           <button
+                             key={slot}
+                             type="button"
+                             disabled={taken}
+                             onClick={() => setSelectedSlot(slot)}
+                             className={`rounded-xl border-2 py-2 text-sm font-bold transition ${
+                               taken
+                                 ? "cursor-not-allowed border-line bg-ink/5 text-ink/30"
+                                 : isSelected
+                                   ? "border-gold bg-gold text-ink"
+                                   : "border-line bg-white hover:border-ink/30"
+                             }`}
+                           >
+                              <span className={taken ? "line-through" : ""}>
+                                {minutesToTime(slot)}
+                              </span>
+                              {taken && (
+                                 <span className="mt-0.5 block text-[9px] font-semibold tracking-widest">TERISI</span>
+                              )}
+                           </button>
+                         );
+                       })}
+                     </div>
+                      {allTaken && (
+                         <p className="mt-3 text-sm text-ink/50">
+                           Semua jam di tanggal ini sudah di booking. Coba tanggal lain atau kapster lain.
+                         </p>
+                      )}
+                   </>
                 ) : (
                   <p className="mt-4 text-sm text-ink/50">
-                    Tidak ada jam tersedia di tanggal ini.
-                  </p>
+                     {selectedDate === today
+                        ? "Jam operasional hari ini sudah berakhir. Silakan pilih tanggal lain."
+                        : "Jam operasional untuk tanggal ini belum diatur. Silakan pilih tanggal lain atau hubungi kami."}
+                   </p>
                 )
               ) : (
                 <p className="mt-4 text-sm text-ink/50">
-                  {selectedBarber.name} libur di hari ini.
+                  {selectedBarber.name} libur di hari ini. Pilih barber lain atau tanggal lain.
                 </p>
               )}
             </section>
