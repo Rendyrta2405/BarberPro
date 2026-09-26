@@ -89,6 +89,14 @@ export async function createBooking(input: BookingInput) {
          };
       }
 
+      if (error.code === "23505") {
+         // 23505 → unique index dilanggar → nomor ini sudah punya booking aktif di hari yang sama
+         return {
+            ok: false as const,
+            message: "Kamu sudah punya booking dengan nomor ini. Batalkan booking atau pakai nomor lain."
+         }
+      }
+      
       if (error.code === "42501") { 
          // RLS menolak → tidak ada policy yang mengizinkan
          return {

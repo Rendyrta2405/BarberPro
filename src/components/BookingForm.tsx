@@ -182,7 +182,7 @@ export default function BookingForm({
               setCustomerName(e.target.value);
               clearError("name");
             }}
-            placeholder="Nama kamu"
+            placeholder="Nama depan"
             className="input-premium"
           />
           {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
@@ -234,7 +234,7 @@ export default function BookingForm({
         </div>
 
         {status === "error" && (
-          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700 whitespace-pre-line">
+          <p className="rounded-xl bg-red-50 p-3 text-xs text-red-700 whitespace-pre-line [word-spacing:1px] tracking-[.5px] leading-[15px]">
             {serverMessage}
           </p>
         )}
