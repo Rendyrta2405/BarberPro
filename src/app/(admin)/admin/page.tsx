@@ -1,7 +1,7 @@
 import { CalendarCheck, Wallet, Hourglass, Crown } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import AdminBookingCard from "@/components/AdminBookingCard";
+import AdminBookingsTable, { type BookingRow } from "@/components/AdminBookingsTable";
 import StatCard from "@/components/StatCard";
 import { formatRupiah } from "@/lib/format";
 
@@ -69,7 +69,7 @@ export default async function AdminPage() {
 
    // ---------- RENDER ----------
    
-     return (
+  return (
     <section>
       <p className="eyebrow">Ringkasan</p>
       <h1 className="font-display mt-2 text-3xl font-semibold">Dashboard</h1>
@@ -100,15 +100,8 @@ export default async function AdminPage() {
 
       <h2 className="font-display mt-10 mb-4 text-xl font-semibold">Semua Booking</h2>
 
-      {all.length === 0 ? (
-        <p className="text-cream/50">Belum ada booking masuk.</p>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {all.map((booking) => (
-            <AdminBookingCard key={booking.id} booking={booking} />
-          ))}
-        </div>
-      )}
+      <AdminBookingsTable initialBookings={(all ?? []) as BookingRow[]} />
+       
     </section>
   );
 }
