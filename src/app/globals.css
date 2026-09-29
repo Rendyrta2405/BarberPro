@@ -78,3 +78,90 @@ body {
 .anim-delay-1 { animation-delay: 0.1s; }
 .anim-delay-2 { animation-delay: 0.2s; }
 .anim-delay-3 { animation-delay: 0.3s; }
+
+
+/* ====== React Calendar (Minimalist Premium BarberPro Theme) ====== */
+
+.react-calendar {
+  background: var(--color-ink) !important;
+  color: var(--color-cream) !important;
+  border: 1px solid rgba(232, 226, 214, 0.08) !important; /* Border super tipis hampir tidak terlihat */
+  border-radius: 1rem !important; 
+  font-family: var(--font-sans) !important;
+  padding: 16px !important;
+}
+
+/* Nama Hari (SEN, SEL, RAB...): Dibuat abu-abu/krim redup, bukan emas */
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+  color: rgba(250, 248, 247, 0.4) !important; /* Krim redup agar tidak mencolok */
+  font-weight: 600 !important;
+  font-size: 0.7rem !important;
+  text-transform: uppercase;
+}
+
+/* Setiap Kotak Tanggal: Bersih, gelap, dengan teks krim lembut */
+.react-calendar__tile {
+  background: transparent !important;
+  color: var(--color-cream) !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.875rem !important;
+  padding: 10px 0 !important;
+  transition: all 0.15s ease;
+}
+
+/* Tanggal Akhir Pekan (Sabtu & Minggu): Tetap putih/krim agar tidak merusak ritme warna */
+.react-calendar__month-view__days__day--weekend {
+  color: var(--color-cream) !important;
+}
+
+/* Tanggal di luar bulan aktif (Neighboring Month): Dibuat sangat samar */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: rgba(250, 248, 247, 0.15) !important;
+}
+
+/* [AKSEN GOLD 1] Efek Hover: Menyorot lembut dengan latar ink-soft dan teks emas saat disentuh */
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: var(--color-ink-soft) !important;
+  color: var(--color-gold) !important;
+}
+
+/* [AKSEN GOLD 2] Penanda Hari Ini (Current Date): Hanya lingkaran/kotak luar emas tipis */
+.react-calendar__tile--now {
+  background: transparent !important;
+  border: 1px solid var(--color-gold) !important;
+  color: var(--color-gold) !important;
+}
+
+/* [AKSEN GOLD 3] Tanggal Terpilih (Active State Block) */
+.react-calendar__tile--active {
+  background: var(--color-line) !important;
+  color: var(--color-ink) !important;
+  font-weight: 700 !important;
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: var(--color-gold-soft) !important;
+  color: var(--color-ink) !important;
+}
+
+/* Bagian Navigasi Atas (Bulan & Tahun): Dibuat minimalis */
+.react-calendar__navigation {
+  margin-bottom: 1.25rem !important;
+}
+
+.react-calendar__navigation button {
+  color: var(--color-cream) !important;
+  background: transparent !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  border-radius: 0.5rem !important;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: var(--color-ink-soft) !important;
+  color: var(--color-gold) !important;
+}
