@@ -38,6 +38,8 @@ export default async function LandingPage() {
         <Image
           src="/images/hero.png"
           alt="Gambar hero premium BarberPro"
+          fill
+          loading="eager"
           className="absolute inset-0 h-full w-full object-cover opacity-25"
         />
         <div className="relative mx-auto max-w-6xl px-4 py-28 text-center sm:py-36">

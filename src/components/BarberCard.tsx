@@ -13,12 +13,14 @@ function getInitials(name: string) {
 export default function BarberCard({ barber }: { barber: Barber }) {
   return (
     <div className="card group overflow-hidden">
-      <div className="h-64 overflow-hidden bg-ink/10">
+      <div className="relative h-64 overflow-hidden bg-ink/10">
         {barber.photo_url ? (
           <Image
             src={barber.photo_url}
             alt={barber.name}
             loading="lazy"
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             className="h-full w-full object-cover grayscale transition duration-500 group-hover:grayscale-0 group-hover:scale-105"
           />
         ) : (

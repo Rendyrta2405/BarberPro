@@ -10,6 +10,8 @@ export default function ServiceCard({ service }: { service: Service }) {
           <Image
             src={service.image_url}
             alt={service.name}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             loading="lazy"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
