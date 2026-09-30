@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Barber } from "@/lib/types";
 
 function getInitials(name: string) {
@@ -14,7 +15,7 @@ export default function BarberCard({ barber }: { barber: Barber }) {
     <div className="card group overflow-hidden">
       <div className="h-64 overflow-hidden bg-ink/10">
         {barber.photo_url ? (
-          <img
+          <Image
             src={barber.photo_url}
             alt={barber.name}
             loading="lazy"

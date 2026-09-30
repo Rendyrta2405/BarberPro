@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { isValidIndonesianPhone, normalizePhone } from "@/lib/phone";
 import { minutesToTime } from "@/lib/slots";
 import { createBooking } from "@/lib/booking-actions";
@@ -96,17 +96,21 @@ export default function BookingForm({
      setServerMessage("");
   }
 
-  function clearServerNote() {
+  const clearServerNote = useCallback(() => {
     if (status === "error") {
       setStatus("idle");
       setServerMessage("");
     }
-  }
+  }, [status]);
 
   // Patroli: kalau pilihan dari induk berubah, catatan gagal sudah basi → cabut.
   useEffect(() => {
-    clearServerNote();
-  }, [date, slotMinutes, serviceId, barberId]);
+     const timer = setTimeout(() => {
+        clearServerNote();
+     }, 0)
+
+     return () => clearTimeout(timer);
+  }, [date, slotMinutes, serviceId, barberId, clearServerNote]);
 
   /* Saat belum lengkap: tampilkan kartu ringkasan "hidup".
      Component tetap MOUNTED (state aman), hanya isinya berbeda. */

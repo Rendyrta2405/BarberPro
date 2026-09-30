@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import ServiceCard from "@/components/ServiceCard";
 import BarberCard from "@/components/BarberCard";
 import { getActiveServices, getActiveBarbers } from "@/lib/queries";
@@ -34,9 +35,9 @@ export default async function LandingPage() {
     <main>
       {/* ============ HERO ============ */}
       <section className="relative overflow-hidden bg-ink text-cream">
-        <img
-          src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1600&q=60"
-          alt=""
+        <Image
+          src="/images/hero.png"
+          alt="Gambar hero premium BarberPro"
           className="absolute inset-0 h-full w-full object-cover opacity-25"
         />
         <div className="relative mx-auto max-w-6xl px-4 py-28 text-center sm:py-36">

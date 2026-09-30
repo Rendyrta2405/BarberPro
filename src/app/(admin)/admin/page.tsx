@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import AdminBookingsTable, { type BookingRow } from "@/components/AdminBookingsTable";
+import AdminBookingsTable from "@/components/AdminBookingsTable";
+import { type BookingRow } from "@/lib/types";
 
 export default async function AdminPage() {
    const supabase = await createSupabaseServerClient();

@@ -3,9 +3,7 @@ import StatCard from "@/components/StatCard";
 import { type BookingRow } from "@/lib/types";
 import { formatRupiah } from "@/lib/format";
 
-export default function AdminStats({ bookings }: BookingRow[]) {
-   /* console.log(bookings.bookings);
-   return; */
+export default function AdminStats({ bookings }: { bookings: BookingRow[] }) {
    const all = bookings ?? [];
    
    // ---------- STATISTIK ----------

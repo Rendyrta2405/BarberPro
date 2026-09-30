@@ -61,11 +61,11 @@ export async function updateBookingStatus(bookingId: number, newStatus: string) 
    
          const serviceName = Array.isArray(booking.services)
            ? booking.services[0]?.name ?? "Layanan"
-           : (booking.services as any)?.name ?? "Layanan";
+           : (booking.services as {name?: string})?.name ?? "Layanan";
    
          const barberName = Array.isArray(booking.barbers)
            ? booking.barbers[0]?.name ?? "Barber"
-           : (booking.barbers as any)?.name ?? "Barber";
+           : (booking.barbers as {name?: string})?.name ?? "Barber";
    
          await sendBookingEmail({
            toEmail: booking.customer_email,

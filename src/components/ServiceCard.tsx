@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Service } from "@/lib/types";
 import { formatRupiah } from "@/lib/format";
 
@@ -6,7 +7,7 @@ export default function ServiceCard({ service }: { service: Service }) {
     <div className="card group overflow-hidden">
       <div className="relative h-48 overflow-hidden bg-ink/10">
         {service.image_url && (
-          <img
+          <Image
             src={service.image_url}
             alt={service.name}
             loading="lazy"

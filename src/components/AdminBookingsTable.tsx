@@ -44,7 +44,9 @@ export default function AdminBookingsTable({
   }
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => {
+       setMounted(true);
+    }, 0);
 
     const supabase = createSupabaseBrowserClient();
     const channel = supabase
@@ -60,6 +62,7 @@ export default function AdminBookingsTable({
 
     return () => {
       supabase.removeChannel(channel);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -132,7 +135,11 @@ export default function AdminBookingsTable({
   const rows = filtered.slice((pageSafe - 1) * 10, pageSafe * 10);
 
   useEffect(() => {
-     setPage(1);
+     const timer = setTimeout(() => {
+        setPage(1);
+     }, 0);
+
+     return () => clearTimeout(timer);
   }, [range, status, barber, q, customRange]);
 
   return (
