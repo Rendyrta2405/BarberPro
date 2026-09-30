@@ -144,12 +144,17 @@ export default function BookingClient({
                     key={service.id}
                     type="button"
                     onClick={() => chooseService(service.id)}
-                    className={`w-full rounded-2xl border-2 bg-white p-4 text-left transition ${
+                    className={`w-full rounded-2xl border-2 bg-white p-4 text-left transition relative ${
                       isSelected
                         ? "border-gold shadow-[0_0_0_4px_rgb(201_162_75/0.15)]"
                         : "border-line hover:border-ink/30"
                     }`}
                   >
+                   {service.badge && (
+                       <span className="absolute -top-2 -right-2 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-ink shadow">
+                         {service.badge}
+                       </span>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="font-display font-semibold">{service.name}</span>
                       <span className="text-sm font-bold text-gold">

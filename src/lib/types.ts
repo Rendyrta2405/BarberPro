@@ -6,6 +6,7 @@ export interface Service {
    description: string;
    is_active: boolean;
    image_url: string | null;
+   badge: string | null;
 }
 
 export interface Barber {

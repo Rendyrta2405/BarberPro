@@ -14,7 +14,8 @@ create table public.services (
   duration int8 not null,
   description text,
   is_active boolean not null default true,
-  image_url text
+  image_url text,
+  badge text
 );
 
 -- ---------------- BARBERS ----------------

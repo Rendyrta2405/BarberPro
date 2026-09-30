@@ -25,23 +25,31 @@ export default function AdminBookingsTable({
 }) {
   const [bookings, setBookings] = useState<BookingRow[]>(initialBookings);
   const [busyId, setBusyId] = useState<number | null>(null);
-  const [range, setRange] = useState<"today" | "7d" | "30d" | "all" | "custom">("all");
+  const [range, setRange] = useState<"today" | "7d" | "30d" | "all" | "custom">("today");
   const [status, setStatus] = useState<"all" | "pending" | "confirmed" | "done" | "cancelled">("all");
   const [barber, setBarber] = useState("all");
   const [q, setQ] = useState("");
   const [mounted, setMounted] = useState(false);
   // G2: tipe eksplisit. Tanpa generic, TS yakin state ini selamanya null.
   const [customRange, setCustomRange] = useState<Value | null>(null);
+  const [live, setLive] = useState<string>("MENYAMBUNG…");
   const [page, setPage] = useState<number>(1);
 
   async function reload() {
     const supabase = createSupabaseBrowserClient();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("bookings")
       .select("*, services(name, price), barbers(name)")
-      .order("starts_at", { ascending: false });
+      .order("starts_at", { ascending: true });
+     
     if (data) setBookings(data as BookingRow[]);
+    
+    if (error) {
+       setLive("RELOAD GAGAL"); 
+       return;
+    }
   }
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -58,7 +66,7 @@ export default function AdminBookingsTable({
           reload();
         }
       )
-      .subscribe();
+      .subscribe((status: string) => setLive(status));
 
     return () => {
       supabase.removeChannel(channel);
@@ -78,6 +86,8 @@ export default function AdminBookingsTable({
     setBusyId(null);
     if (!result.ok) {
       window.alert(result.message);
+    } else {
+      await reload();
     }
     // Tanpa reload() di sini: seruan langganan akan tiba sendiri dan memperbarui tabel.
   }
@@ -145,13 +155,20 @@ export default function AdminBookingsTable({
   return (
     <>
       <AdminStats bookings={bookings} />
-       
-      <h2 className="font-display mt-10 mb-4 text-xl font-semibold">Semua Booking</h2>
+
+      <div className="flex justify-between items-center pt-8 pb-3">
+         <h2 className="font-display text-xl font-semibold">Semua Booking</h2>
+         <p className="text-[10px] uppercase tracking-widest text-cream/40">
+           Kanal live: <span className="font-bold text-cream/70">{live}</span>
+         </p>
+      </div>
       
-       {/* S5: mount hanya di klien — kalender tidak boleh dirender server. */}
+      {/* S5: mount hanya di klien — kalender tidak boleh dirender server. */}
       {mounted && range === "custom" && (
         <DateRangePicker onSendRange={handleSetCustomRange} />
       )}
+
+       
       <div className="mb-4 grid gap-2 sm:grid-cols-4">
         <select
           value={range}
