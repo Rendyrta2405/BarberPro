@@ -40,9 +40,17 @@ export default function AdminBookingsTable({
     const { data, error } = await supabase
       .from("bookings")
       .select("*, services(name, price), barbers(name)")
-      .order("starts_at", { ascending: true });
+      .order("starts_at", { ascending: true })
+      .order("id", { ascending: true });
      
-    if (data) setBookings(data as BookingRow[]);
+    if (data) {
+       // Urutkan data secara paksa di sisi klien berdasarkan string waktu/jam 'starts_at'
+       const sortedData = [...data].sort((a, b) => {
+         return (new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()) || (a.id - b.id);
+       });
+      
+       setBookings(sortedData as BookingRow[]);
+    }
     
     if (error) {
        setLive("RELOAD GAGAL"); 
@@ -89,7 +97,6 @@ export default function AdminBookingsTable({
     } else {
       await reload();
     }
-    // Tanpa reload() di sini: seruan langganan akan tiba sendiri dan memperbarui tabel.
   }
 
   const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });

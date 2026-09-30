@@ -15,7 +15,8 @@ export default async function AdminPage() {
    const { data: bookings, error } = await supabase
       .from("bookings")
       .select("*, services(name, price), barbers(name)")
-      .order("starts_at", { ascending: true });
+      .order("starts_at", { ascending: true })
+      .order("id", { ascending: true });
 
    if (error) {
       return <p className="text-red-500">
