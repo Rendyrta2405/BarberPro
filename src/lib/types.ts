@@ -24,3 +24,15 @@ export interface WorkingHour {
    start_time: string;
    end_time: string;
 }
+
+// Bentuk baris dari select("*, services(name, price), barbers(name)").
+// Diekspor supaya halaman admin bisa memakai tipe yang sama.
+export type BookingRow = {
+  id: number;
+  customer_name: string;
+  customer_phone: string;
+  starts_at: string;
+  status: string;
+  services: { name: string; price: number } | null;
+  barbers: { name: string } | null;
+};

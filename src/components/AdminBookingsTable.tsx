@@ -5,18 +5,8 @@ import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { updateBookingStatus } from "@/lib/admin-actions";
 import { formatRupiah } from "@/lib/format";
 import DateRangePicker, { type Value } from "@/components/DateRangePicker";
-
-// Bentuk baris dari select("*, services(name, price), barbers(name)").
-// Diekspor supaya halaman admin bisa memakai tipe yang sama.
-export type BookingRow = {
-  id: number;
-  customer_name: string;
-  customer_phone: string;
-  starts_at: string;
-  status: string;
-  services: { name: string; price: number } | null;
-  barbers: { name: string } | null;
-};
+import { type BookingRow } from "@/lib/types";
+import AdminStats from "@/components/AdminStats";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-400/15 text-yellow-300",
@@ -42,6 +32,7 @@ export default function AdminBookingsTable({
   const [mounted, setMounted] = useState(false);
   // G2: tipe eksplisit. Tanpa generic, TS yakin state ini selamanya null.
   const [customRange, setCustomRange] = useState<Value | null>(null);
+  const [page, setPage] = useState<number>(1);
 
   async function reload() {
     const supabase = createSupabaseBrowserClient();
@@ -136,9 +127,21 @@ export default function AdminBookingsTable({
     return "Rentang kustom…";
   };
 
+  const pageCount = Math.max(1, Math.ceil(filtered.length / 10));
+  const pageSafe = Math.min(page, pageCount);
+  const rows = filtered.slice((pageSafe - 1) * 10, pageSafe * 10);
+
+  useEffect(() => {
+     setPage(1);
+  }, [range, status, barber, q, customRange]);
+
   return (
     <>
-      {/* S5: mount hanya di klien — kalender tidak boleh dirender server. */}
+      <AdminStats bookings={bookings} />
+       
+      <h2 className="font-display mt-10 mb-4 text-xl font-semibold">Semua Booking</h2>
+      
+       {/* S5: mount hanya di klien — kalender tidak boleh dirender server. */}
       {mounted && range === "custom" && (
         <DateRangePicker onSendRange={handleSetCustomRange} />
       )}
@@ -215,7 +218,7 @@ export default function AdminBookingsTable({
                 </td>
               </tr>
             ) : (
-              filtered.map((b) => (
+              rows.map((b) => (
                 <tr key={b.id} className="border-b border-cream/5">
                   <td className="py-2 pr-3">
                     {new Date(b.starts_at).toLocaleDateString("id-ID", {
@@ -284,6 +287,22 @@ export default function AdminBookingsTable({
             )}
           </tbody>
         </table>
+
+        <div className="nav-btn flex gap-3 justify-end py-3">
+           <span className="text-cream text-sm">Halaman {pageSafe} dari {pageCount} — [ {filtered.length} booking ]</span>
+           <button className="btn rounded-xl border border-gold text-xs text-gold-300 disabled:opacity-50 px-3 py-1"
+              disabled={pageSafe <= 1}
+              onClick={() => setPage(page - 1)}
+           >
+              ← Sebelumnya
+           </button>
+           <button className="btn btn rounded-xl border border-gold text-xs text-gold-300 disabled:opacity-50 px-3 py-1"
+              disabled={pageSafe >= pageCount}
+              onClick={() => setPage(page + 1)}
+           >
+              Berikutnya →
+           </button>
+        </div>
       </div>
     </>
   );
