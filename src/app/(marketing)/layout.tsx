@@ -21,6 +21,9 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
             <a href="#testimoni" className="hidden text-ink/60 transition hover:text-ink sm:block">
               Testimoni
             </a>
+            <Link href="/admin" className="text-sm text-ink/60 transition hover:text-ink border border-2 border-gold px-3 py-1 rounded-xl">
+              Demo Owner
+            </Link>
             <Link href="/booking" className="btn-gold">
               Booking Sekarang
             </Link>
