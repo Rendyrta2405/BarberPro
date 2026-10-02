@@ -1,35 +1,12 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { STORE } from "@/lib/data";
+import MarketingNav from "@/components/MarketingNav";
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-20 border-b border-line bg-cream/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="font-display text-xl font-bold">
-            {STORE.logoPlain}<span className="text-gold">{STORE.logoAccent}</span>
-          </Link>
-
-          <nav className="flex items-center gap-6 text-sm font-semibold">
-            <a href="#layanan" className="hidden text-ink/60 transition hover:text-ink sm:block">
-              Layanan
-            </a>
-            <a href="#barber" className="hidden text-ink/60 transition hover:text-ink sm:block">
-              Barber
-            </a>
-            <a href="#testimoni" className="hidden text-ink/60 transition hover:text-ink sm:block">
-              Testimoni
-            </a>
-            <Link href="/admin" className="text-sm text-ink/60 transition hover:text-ink border border-2 border-gold px-3 py-1 rounded-xl">
-              Demo Owner
-            </Link>
-            <Link href="/booking" className="btn-gold">
-              Booking Sekarang
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <MarketingNav />
 
       {children}
 
